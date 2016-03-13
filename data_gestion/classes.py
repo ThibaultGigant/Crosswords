@@ -27,7 +27,6 @@ class Grid:
         words_list = []
 
         # Détection des mots horizontaux
-        print("horizontal")
         for line in range(self.get_height()):
             i = 0
             while i < self.get_width():
@@ -39,7 +38,6 @@ class Grid:
                         words_list.append(Word(i - start, self.dictionary, (line, start), True))
                 i += 1
 
-        print("vertical")
         # Détection des mots verticaux
         for line in range(self.get_height()):
             for letter in range(self.get_width()):
@@ -50,7 +48,6 @@ class Grid:
                     if i > line + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
                         words_list.append(Word(i - line, self.dictionary, (line, letter), False))
 
-        print("contraintes unaires")
         # Ajout des contraintes unaires : s'il y a déjà des lettres dans la grille
         for word in words_list:
             coord = word.coord
@@ -65,7 +62,6 @@ class Grid:
                                        self.grid[coord[0] + i][coord[1]]).encode("ascii", "ignore").decode("ascii")
                     word.add_unary_constaint(i, letter)
 
-        print("contraintes binaires")
         # Ajout des contraintes binaires (entre deux mots)
         for word1 in range(len(words_list)-1):
             for word2 in range(word1 + 1, len(words_list)):
@@ -146,7 +142,7 @@ class Word:
         :param coord: coordonnées (ligne, colonne) de la première lettre dans la grille
         :param horizontal: True si le mot est horizontal dans la grille, False sinon
         :type length: int
-        :type dictionary: dict
+        :type dictionary: dict[int, Tree]
         :type coord: tuple
         :type horizontal: bool
         :return: 
@@ -160,7 +156,6 @@ class Word:
         self.list_coordinates = [(coord[0], coord[1] + i) if horizontal else (coord[0] + i, coord[1]) for i in range(length)]
         self.id = Word.word_id
         Word.word_id += 1
-
 
     def __str__(self):
         """
@@ -188,6 +183,9 @@ class Word:
         :param word: mot ayant une lettre commune avec le mot courant
         :param letter_index1: indice de la lettre commune dans le mot courant
         :param letter_index2: indice de la lettre commune dans word
+        :type word: Word
+        :type letter_index1: int
+        :type letter_index2: int
         """
         self.binary_constraints.append((word, letter_index1, letter_index2))
         
@@ -200,3 +198,232 @@ class Word:
         :type letter: str
         """
         self.unary_constraints.append((letter_index, letter))
+
+    def respect_unary_constraints(self):
+        """
+        Ecume le domaine du mot par rapport à ses contraintes unaires
+        :return: True si le domaine du mot n'est pas vide après écumage, False sinon
+        """
+        for constraint in self.unary_constraints:
+            self.domain.respect_unary_contraint(constraint[0], [constraint[1]])
+        return not self.domain.is_empty()
+
+    def respect_binary_constraints(self):
+        """
+        Ecume le domaine du mot par rapport à ses contraintes binaires
+        :return: True si un domaine a été modifié, False sinon
+        """
+        modif = False
+        for constraint in self.binary_constraints:
+            this_index = constraint[1]
+            other_index = constraint[2]
+            this_letters = self.domain.letters_at_index(this_index)
+            other_letters = constraint[0].domain.letters_at_index(other_index)
+            union_letters = this_letters.intersection(other_letters)
+
+            print(this_letters, other_letters, union_letters)
+
+            if this_letters != union_letters:
+                self.domain.respect_unary_contraint(this_index, union_letters)
+                modif = True
+            if other_letters != union_letters:
+                constraint[0].domain.respect_unary_contraint(other_index, union_letters)
+                modif = True
+        return modif
+
+
+class Tree:
+    """
+    Classe basique d'arbre, pour les besoins du stockage des domaines
+    """
+
+    def __init__(self, word, level=0, children=None):
+        """
+        Constructeur
+        :param word: mot contenu dans l'arbre
+        :param children: dictionnaire recensant les fils, la clé étant la data de l'arbre fils
+        :type word: str
+        :type children: dict[str, Tree]
+        :return:
+        """
+        self.children = children if children else {}
+        self.level = level
+        if level == 0:
+            self.data = ""
+            self.add_word(word)
+        else:
+            if word:
+                self.data = word[0]
+                self.add_word(word[1:])
+            else:
+                self.data = ""
+                self.add_word("")
+
+    def get_data(self):
+        """
+        Retourne la donnée stockée à ce noeud
+        :return:
+        """
+        return self.data
+
+    def add_word(self, word):
+        """
+        Ajoute le mot à l'arbre courant
+        :param word: mot à rajouter à l'arbre
+        :type word: str
+        """
+        if word and word[0] not in self.children:
+            self.children[word[0]] = Tree(word, level=self.level + 1)
+        elif word and word[0] in self.children:
+            self.children[word[0]].add_word(word[1:])
+        else:
+            self.children[""] = None
+
+    def cardinality(self):
+        """
+        Donne le nombre de mots contenus dans l'arbre, c'est-à-dire le nombre de feuilles
+        :return: nombre de mots contenus dans l'arbre
+        :rtype: int
+        """
+        return sum([1 if not tree else tree.cardinality() for tree in self.children.values()])
+
+    def list_words(self):
+        """
+        Renvoie la liste des mots contenus dans le graphe
+        :return: la liste des mots contenus dans le graphe
+        :rtype: list[str]
+        """
+        if self.children:
+            res = []
+            for child in self.children.values():
+                if child:
+                    for word in child.list_words():
+                        res.append(self.data + word)
+                else:
+                    res.append(self.data)
+            res.sort()
+            return res
+        else:
+            return [self.data]
+
+    def respect_unary_contraint(self, letter_index, letters_list):
+        """
+        Ecume le domaine pour respecter la contrainte
+        :param letter_index: indice de la lettre dans le mot à respecter
+        :param letters_list: liste de lettres acceptées à cet indice
+        :type letter_index: int
+        :type letters_list: list[str]
+        :return: True si après écumage, le noeud courant n'a plus de fils, False sinon
+        :rtype: bool
+        """
+        # Si on est au niveau demandé, on regarde les lettres contenues dans les enfants
+        if self.level == letter_index:
+            if self.children:
+                letters = []
+                for letter in self.children.keys():
+                    if letter not in letters_list:
+                        letters.append(letter)
+                for letter in letters:
+                    del self.children[letter]
+                if not self.children:
+                    return True
+        # sinon on appelle récursivement sur les enfants, en vérifiant bien que c'est possible
+        else:
+            if self.children:
+                letters = []
+                for letter, child in self.children.items():
+                    if child and child.respect_unary_contraint(letter_index, letters_list):
+                        letters.append(letter)
+                for letter in letters:
+                    del self.children[letter]
+                if not self.children or list(self.children.keys()) == [""]:
+                    return True
+        return False
+
+    def letters_at_index(self, letter_index):
+        """
+        Renvoie la liste de toutes les lettres à l'indice demandé dans les mots contenus dans l'arbre
+        :param letter_index: indice de la lettre dans le mot
+        :type letter_index: int
+        :return: liste des lettres
+        :rtype: set[str]
+        """
+        if self.level == letter_index:
+            if self.children:
+                return set(self.children.keys())
+        else:
+            if self.children:
+                res = set([])
+                for child in self.children.values():
+                    if child:
+                        temp = child.letters_at_index(letter_index)
+                        if temp:
+                            res = res.union(temp)
+                if res:
+                    return set(res)
+        return set([])
+
+    def is_empty(self):
+        """
+        Détermine si l'arbre est vide ou non
+        :return: True si l'arbre est vide, False sinon
+        """
+        return (not self.children) or list(self.children.keys()) == [""]
+
+
+def test_tree():
+    t = Tree("representative")
+    t.add_word("test")
+    t.add_word("representant")
+    print(t.list_words(), t.cardinality())
+    t.respect_unary_contraint(2, ["p", "s", "i"])
+    print(t.list_words())
+    print(t.letters_at_index(10))
+
+
+def test_contraintes():
+    t1 = Tree("top")
+    t1.add_word("tap")
+    t1.add_word("tou")
+    t1.add_word("cou")
+    t1.add_word("car")
+
+    t2 = Tree("four")
+    t2.add_word("cour")
+    t2.add_word("sour")
+    t2.add_word("soir")
+
+    dico = {3: t1, 4: t2}
+
+    w1 = Word(3, dico, (0, 0), True)
+    w2 = Word(4, dico, (0, 0), True)
+
+    w1.add_unary_constaint(0, "c")
+    print(w1.domain.list_words())
+    w1.respect_unary_constraints()
+    print(w1.domain.list_words())
+
+    w1.add_binary_constraint(w2, 1, 1)
+    w2.add_binary_constraint(w1, 1, 1)
+    print("Avant modification des domaines par respect des contraintes binaires")
+    print(w1.domain.list_words())
+    print(w2.domain.list_words())
+
+    modif = w1.respect_binary_constraints()
+    print("Après modification des domaines par respect des contraintes binaires 1 1")
+    print(modif)
+    print(w1.domain.list_words())
+    print(w2.domain.list_words())
+
+    w1.add_binary_constraint(w2, 0, 0)
+    w2.add_binary_constraint(w1, 0, 0)
+    modif = w1.respect_binary_constraints()
+    print("Après modification des domaines par respect des contraintes binaires 0 0")
+    print(modif)
+    print(w1.domain.list_words())
+    print(w2.domain.list_words())
+
+
+if __name__ == '__main__':
+    test_tree()
+    test_contraintes()

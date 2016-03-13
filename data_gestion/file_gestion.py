@@ -75,3 +75,4 @@ if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     print(dico)
     print(read_grid(sys.argv[2], dico))
+    print(sum([len(i) for i in dico.values()]))
