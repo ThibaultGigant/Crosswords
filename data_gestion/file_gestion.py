@@ -1,6 +1,6 @@
 import sys
 from unicodedata import normalize
-from classes import Grid
+from classes import Grid, Tree
 
 
 def read_dictionary(file_name):
@@ -10,7 +10,7 @@ def read_dictionary(file_name):
     :type file_name: str
     :raises: IOError
     :return: dictionnaire contenant tous les mots, triés par nombre de lettres des mots
-    :rtype: dict
+    :rtype: dict[int, Tree]
     """
     try:
         fp = open(file_name, "r")
@@ -18,7 +18,7 @@ def read_dictionary(file_name):
         raise IOError("File not found")
 
     # dictionnaire à compléter avec les mots du fichier et à retourner
-    dico = {}
+    dico = {}  # type: dict[int, Tree]
 
     # lecture ligne par ligne
     try:
@@ -28,9 +28,9 @@ def read_dictionary(file_name):
             # Pour supprimer les accents
             mot = normalize("NFKD", mot).encode("ascii", "ignore").decode("ascii")
             if len(mot) in dico:
-                dico[len(mot)].add(mot)
+                dico[len(mot)].add_word(mot)
             else:
-                dico[len(mot)] = {mot}
+                dico[len(mot)] = Tree(mot)
             ligne = fp.readline()
     except:
         raise IOError("Wrong file format")
@@ -75,4 +75,7 @@ if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     print(dico)
     print(read_grid(sys.argv[2], dico))
-    print(sum([len(i) for i in dico.values()]))
+    print("Nombre de mots : " + str(sum([i.cardinality() for i in dico.values()])))
+    for i in dico.values():
+        aff = i.list_words()
+        print(aff)
