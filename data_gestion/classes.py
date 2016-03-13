@@ -205,7 +205,7 @@ class Word:
         :return: True si le domaine du mot n'est pas vide après écumage, False sinon
         """
         for constraint in self.unary_constraints:
-            self.domain.respect_unary_contraint(constraint[0], [constraint[1]])
+            self.domain.respect_unary_constraints(constraint[0], [constraint[1]])
         return not self.domain.is_empty()
 
     def respect_binary_constraints(self):
@@ -224,10 +224,10 @@ class Word:
             print(this_letters, other_letters, union_letters)
 
             if this_letters != union_letters:
-                self.domain.respect_unary_contraint(this_index, union_letters)
+                self.domain.respect_unary_constraints(this_index, union_letters)
                 modif = True
             if other_letters != union_letters:
-                constraint[0].domain.respect_unary_contraint(other_index, union_letters)
+                constraint[0].domain.respect_unary_constraints(other_index, union_letters)
                 modif = True
         return modif
 
@@ -306,7 +306,7 @@ class Tree:
         else:
             return [self.data]
 
-    def respect_unary_contraint(self, letter_index, letters_list):
+    def respect_unary_constraints(self, letter_index, letters_list):
         """
         Ecume le domaine pour respecter la contrainte
         :param letter_index: indice de la lettre dans le mot à respecter
@@ -332,7 +332,7 @@ class Tree:
             if self.children:
                 letters = []
                 for letter, child in self.children.items():
-                    if child and child.respect_unary_contraint(letter_index, letters_list):
+                    if child and child.respect_unary_constraints(letter_index, letters_list):
                         letters.append(letter)
                 for letter in letters:
                     del self.children[letter]
@@ -376,7 +376,7 @@ def test_tree():
     t.add_word("test")
     t.add_word("representant")
     print(t.list_words(), t.cardinality())
-    t.respect_unary_contraint(2, ["p", "s", "i"])
+    t.respect_unary_constraints(2, ["p", "s", "i"])
     print(t.list_words())
     print(t.letters_at_index(10))
 
