@@ -1,0 +1,111 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% LaTeX Template
+% Version 1.0 (26/01/16)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt, letterpaper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+\usepackage[top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+
+\newcommand{\hmark}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+\begin{titlepage}
+\pagenumbering{gobble}
+
+\centering
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=8cm]{upmc.png}
+\end{center}
+\end{figure}
+
+\hmark \\[0.5cm]
+\textsc{\textbf{\Large R\'{e}solution de probl\`{e}mes, g\'{e}n\'{e}ration de mots-crois\'{e}s}} \\[0.5cm]
+\textsc{Androide M1 -- RP} \\[0.5cm]
+\hmark \\[5cm]
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft}
+Thibault \textsc{Gigant} \\
+Laura \textsc{Greige}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright}
+\emph{Enseignants :}\\[0.5cm]
+Patrice \textsc{Perny} \\
+Morgan \textsc{Chopin}
+\end{flushright}
+\end{minipage}\\[4cm]
+
+\large 2015 -- 2016
+
+\end{titlepage}
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\pagenumbering{arabic}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{1pt}
+\lhead{\textbf{RP -- R\'{e}solution de probl\`{e}mes, g\'{e}n\'{e}ration de mots-crois\'{e}s}}
+\rhead{}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+\section{Mod\'{e}lisation par un CSP et r\'{e}solution}
+
+Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}me de satisfaction de contraintes en associant une variable \`{a} chaque mot de la grille. Supposons qu'il y ait $m$ mots dans la grille. \bigskip
+
+\textbf{Variables :} ~ $x_{i}~,~\forall i \in \{1,...,m\}$
+
+\bigskip
+
+\textbf{Domaines :} Soit $dict$ un dictionnaire de mots admissibles:
+
+\begin{align*}
+D(x_{i}) = \{ X \in dict \}
+\end{align*}
+
+\bigskip
+
+\textbf{Contraintes :} Soit $l_{i}$ la taille du mot en $i$:
+
+\begin{equation} 
+len(x_{i}) = l_{i}
+\end{equation}
+\par
+Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
+\begin{equation} 
+x_{i}[q] = x_{j}[p]
+\end{equation}
+\par
+Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
+\begin{equation} 
+\textit{AllDiff}~(x_{1},x_{2},...x_{m})
+\end{equation}
+
+\section{Exp\'{e}rimentation}
+
+\section{Extension au cas pond\'{e}r\'{e}}
+
+\newpage
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+\end{document}

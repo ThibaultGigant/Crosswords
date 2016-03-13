@@ -34,7 +34,9 @@ class Grid:
                     start = i
                     while i < self.get_width() and self.grid[line][i] != '1':
                         i += 1
+                    # if i > start + 1 or i >= start + 2
                     if i > start + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
+                        # words_list.append(Word(i - start + 1, self.dictionary, (line, start), True))
                         words_list.append(Word(i - start, self.dictionary, (line, start), True))
                 i += 1
 
@@ -56,11 +58,11 @@ class Grid:
                 if word.horizontal and self.grid[coord[0]][coord[1] + i] not in ['0', '1']:
                     letter = normalize("NFKD",
                                        self.grid[coord[0]][coord[1] + i]).encode("ascii", "ignore").decode("ascii")
-                    word.add_unary_constaint(i, letter)
+                    word.add_unary_constraint(i, letter)
                 if (not word.horizontal) and self.grid[coord[0] + i][coord[1]] not in ['0', '1']:
                     letter = normalize("NFKD",
                                        self.grid[coord[0] + i][coord[1]]).encode("ascii", "ignore").decode("ascii")
-                    word.add_unary_constaint(i, letter)
+                    word.add_unary_constraint(i, letter)
 
         # Ajout des contraintes binaires (entre deux mots)
         for word1 in range(len(words_list)-1):
@@ -189,7 +191,7 @@ class Word:
         """
         self.binary_constraints.append((word, letter_index1, letter_index2))
         
-    def add_unary_constaint(self, letter_index, letter):
+    def add_unary_constraint(self, letter_index, letter):
         """
         Ajout d'une contrainte sur une lettre du mot : en fait on fixe une lettre du mot
         :param letter_index: indice de la lettre dans le mot
@@ -397,8 +399,7 @@ def test_contraintes():
 
     w1 = Word(3, dico, (0, 0), True)
     w2 = Word(4, dico, (0, 0), True)
-
-    w1.add_unary_constaint(0, "c")
+    w1.add_unary_constraint(0, "c")
     print(w1.domain.list_words())
     w1.respect_unary_constraints()
     print(w1.domain.list_words())
