@@ -1,6 +1,8 @@
 import sys
+from os import getcwd
+sys.path.append(getcwd())
 from unicodedata import normalize
-from classes import Grid, Tree
+from data_gestion.classes import Grid, Tree
 
 
 def read_dictionary(file_name):

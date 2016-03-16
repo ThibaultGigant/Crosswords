@@ -1,5 +1,8 @@
 import sys
+from os import getcwd
+sys.path.append(getcwd())
 from unicodedata import normalize
+from copy import deepcopy
 
 
 class Grid:
@@ -15,14 +18,14 @@ class Grid:
         """
         self.grid = grid
         self.dictionary = dictionary
-        self.constraints = []
+        self.constraints = []  # type: list[(Word, Word, int, int)]
         self.words = self.grid_to_words()
 
     def grid_to_words(self):
         """
         Méthode prenant la grille totale et retournant tous les mots à trouver dans cette grille
         :return: liste de mots de la grille
-        :rtype: list
+        :rtype: list[Word]
         """
         words_list = []
 
@@ -34,9 +37,7 @@ class Grid:
                     start = i
                     while i < self.get_width() and self.grid[line][i] != '1':
                         i += 1
-                    # if i > start + 1 or i >= start + 2
-                    if i > start + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
-                        # words_list.append(Word(i - start + 1, self.dictionary, (line, start), True))
+                    if i >= start + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
                         words_list.append(Word(i - start, self.dictionary, (line, start), True))
                 i += 1
 
@@ -47,7 +48,7 @@ class Grid:
                     i = line
                     while i < self.get_height() and self.grid[i][letter] != '1':
                         i += 1
-                    if i > line + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
+                    if i >= line + 2:  # On rajoute un mot que s'il fait plus de 2 lettres
                         words_list.append(Word(i - line, self.dictionary, (line, letter), False))
 
         # Ajout des contraintes unaires : s'il y a déjà des lettres dans la grille
@@ -58,11 +59,11 @@ class Grid:
                 if word.horizontal and self.grid[coord[0]][coord[1] + i] not in ['0', '1']:
                     letter = normalize("NFKD",
                                        self.grid[coord[0]][coord[1] + i]).encode("ascii", "ignore").decode("ascii")
-                    word.add_unary_constraint(i, letter)
+                    word.add_unary_constaint(i, letter)
                 if (not word.horizontal) and self.grid[coord[0] + i][coord[1]] not in ['0', '1']:
                     letter = normalize("NFKD",
                                        self.grid[coord[0] + i][coord[1]]).encode("ascii", "ignore").decode("ascii")
-                    word.add_unary_constraint(i, letter)
+                    word.add_unary_constaint(i, letter)
 
         # Ajout des contraintes binaires (entre deux mots)
         for word1 in range(len(words_list)-1):
@@ -150,7 +151,7 @@ class Word:
         :return: 
         """
         self.length = length
-        self.domain = dictionary[length]
+        self.domain = deepcopy(dictionary[length])
         self.coord = coord
         self.horizontal = horizontal
         self.binary_constraints = []  # liste de tuples de contraintes binaires : (word, index of common letter)
@@ -191,7 +192,7 @@ class Word:
         """
         self.binary_constraints.append((word, letter_index1, letter_index2))
         
-    def add_unary_constraint(self, letter_index, letter):
+    def add_unary_constaint(self, letter_index, letter):
         """
         Ajout d'une contrainte sur une lettre du mot : en fait on fixe une lettre du mot
         :param letter_index: indice de la lettre dans le mot
@@ -210,28 +211,41 @@ class Word:
             self.domain.respect_unary_constraints(constraint[0], [constraint[1]])
         return not self.domain.is_empty()
 
+    def respect_binary_constraint(self, word, letter_index1, letter_index2):
+        """
+        Ecume le domaine du mot courant en fonction du mot passé en paramètre et des contraintes d'indices
+        :param word: mot avec lequel il y a contrainte
+        :param letter_index1: indice de la lettre commune dans le mot courant
+        :param letter_index2: indice de la lettre commune dans le mot passé en paramètre
+        :return: True si le domaine a été modifié, false sinon
+        :rtype: bool
+        """
+        modif = False
+        this_letters = self.domain.letters_at_index(letter_index1)
+        other_letters = word.domain.letters_at_index(letter_index2)
+        union_letters = this_letters.intersection(other_letters)
+
+        # print(this_letters, other_letters, union_letters)
+
+        if this_letters != union_letters:
+            self.domain.respect_unary_constraints(letter_index1, union_letters)
+            modif = True
+        if other_letters != union_letters:
+            word.domain.respect_unary_constraints(letter_index2, union_letters)
+            modif = True
+
+        return modif
+
     def respect_binary_constraints(self):
         """
         Ecume le domaine du mot par rapport à ses contraintes binaires
         :return: True si un domaine a été modifié, False sinon
+        :rtype: bool
         """
-        modif = False
+        modif = []
         for constraint in self.binary_constraints:
-            this_index = constraint[1]
-            other_index = constraint[2]
-            this_letters = self.domain.letters_at_index(this_index)
-            other_letters = constraint[0].domain.letters_at_index(other_index)
-            union_letters = this_letters.intersection(other_letters)
-
-            print(this_letters, other_letters, union_letters)
-
-            if this_letters != union_letters:
-                self.domain.respect_unary_constraints(this_index, union_letters)
-                modif = True
-            if other_letters != union_letters:
-                constraint[0].domain.respect_unary_constraints(other_index, union_letters)
-                modif = True
-        return modif
+            modif.append(self.respect_binary_constraint(constraint[0], constraint[1], constraint[2]))
+        return any(modif)
 
 
 class Tree:
@@ -399,7 +413,8 @@ def test_contraintes():
 
     w1 = Word(3, dico, (0, 0), True)
     w2 = Word(4, dico, (0, 0), True)
-    w1.add_unary_constraint(0, "c")
+
+    w1.add_unary_constaint(0, "c")
     print(w1.domain.list_words())
     w1.respect_unary_constraints()
     print(w1.domain.list_words())
@@ -420,6 +435,11 @@ def test_contraintes():
     w2.add_binary_constraint(w1, 0, 0)
     modif = w1.respect_binary_constraints()
     print("Après modification des domaines par respect des contraintes binaires 0 0")
+    print(modif)
+    print(w1.domain.list_words())
+    print(w2.domain.list_words())
+    print("Après modification des domaines par respect des contraintes binaires 0 0")
+    modif = w1.respect_binary_constraints()
     print(modif)
     print(w1.domain.list_words())
     print(w2.domain.list_words())
