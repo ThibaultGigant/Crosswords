@@ -151,7 +151,7 @@ class Word:
         :return: 
         """
         self.length = length
-        self.domain = deepcopy(dictionary[length])
+        self.domain = deepcopy(dictionary[length])  # type: Tree
         self.coord = coord
         self.horizontal = horizontal
         self.binary_constraints = []  # liste de tuples de contraintes binaires : (word, index of common letter)
