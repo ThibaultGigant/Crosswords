@@ -1,6 +1,10 @@
 \select@language {french}
 \contentsline {section}{Introduction}{1}
 \contentsline {section}{\numberline {1}Mod\'{e}lisation par un CSP et r\'{e}solution}{1}
-\contentsline {section}{\numberline {2}Exp\'{e}rimentation}{1}
-\contentsline {section}{\numberline {3}Extension au cas pond\'{e}r\'{e}}{1}
-\contentsline {section}{Conclusion}{2}
+\contentsline {subsection}{\numberline {1.1}Mod\'{e}lisation}{1}
+\contentsline {subsection}{\numberline {1.2}Exp\'{e}rimentation}{1}
+\contentsline {section}{\numberline {2}Extension au cas pond\'{e}r\'{e}}{3}
+\contentsline {subsection}{\numberline {2.1}Mod\'{e}lisation}{3}
+\contentsline {subsection}{\numberline {2.2}Exp\'{e}rimentation}{3}
+\contentsline {subsection}{\numberline {2.3}Bonus}{3}
+\contentsline {section}{Conclusion}{4}
