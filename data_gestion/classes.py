@@ -154,7 +154,8 @@ class Word:
         self.domain = deepcopy(dictionary[length])  # type: Tree
         self.coord = coord
         self.horizontal = horizontal
-        self.binary_constraints = []  # liste de tuples de contraintes binaires : (word, index of common letter)
+        # liste de tuples de contraintes binaires : (word, indices of common letter) :
+        self.binary_constraints = []  # type: list[(Word, int, int)]
         self.unary_constraints = []  # liste de tuples de contraintes unaires : (word, index of common letter)
         self.list_coordinates = [(coord[0], coord[1] + i) if horizontal else (coord[0] + i, coord[1]) for i in range(length)]
         self.id = Word.word_id
@@ -224,6 +225,10 @@ class Word:
         this_letters = self.domain.letters_at_index(letter_index1)
         other_letters = word.domain.letters_at_index(letter_index2)
         union_letters = this_letters.intersection(other_letters)
+        print("respect binary " + str(word.id) + " indice " + str(letter_index1) + " et " + str(letter_index2))
+        print(this_letters)
+        print(other_letters)
+        print(union_letters)
 
         # print(this_letters, other_letters, union_letters)
 
@@ -246,6 +251,22 @@ class Word:
         for constraint in self.binary_constraints:
             modif.append(self.respect_binary_constraint(constraint[0], constraint[1], constraint[2]))
         return any(modif)
+
+    def update_related_variables_domain(self):
+        """
+        Ecume le domaine des mots liés au mot courant par une contrainte binaire en fonction de l'instanciation courante
+        :return: True si une modification a été faite, False sinon
+        :rtype: bool
+        """
+        modif = False
+        for word, index1, index2 in self.binary_constraints:
+            this_letters = self.domain.letters_at_index(index1)
+            other_letters = word.domain.letters_at_index(index2)
+            union_letters = this_letters.intersection(other_letters)
+            if other_letters != union_letters:
+                word.domain.respect_unary_constraints(index2, union_letters)
+                modif = True
+        return modif
 
 
 class Tree:
