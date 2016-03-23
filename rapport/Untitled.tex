@@ -13,6 +13,7 @@
 \usepackage{graphicx}
 \usepackage{fancyhdr}
 \usepackage{amsmath}
+\usepackage{tabularx}
 
 \newcommand{\hmark}{\rule{\linewidth}{0.5mm}}
 
@@ -67,7 +68,13 @@ Morgan \textsc{Chopin}
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
+Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), forward checking ($FC$), conflict back-jumping ($CBJ$). La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
+
+Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. Chaque mot du dictionnaire sera muni d'un poids positif ou nul $\in \left[0,1\right]$ et on d\'{e}veloppera un algorithme de type Branch and Bound qui permette de rechercher la solution optimale qui serait la solution de poids maximal dans la grille.
+
 \section{Mod\'{e}lisation par un CSP et r\'{e}solution}
+
+\subsection{Mod\'{e}lisation}
 
 Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}me de satisfaction de contraintes en associant une variable \`{a} chaque mot de la grille. Supposons qu'il y ait $m$ mots dans la grille. \bigskip
 
@@ -99,9 +106,85 @@ Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appar
 \textit{AllDiff}~(x_{1},x_{2},...x_{m})
 \end{equation}
 
-\section{Exp\'{e}rimentation}
+\subsection{Exp\'{e}rimentation}
+
+\subsubsection*{Application}
+
+Dans cette section, nous allons tester les performances de nos algorithmes, d'abord en utilisant RAC avec Forward Checking sans AC3 pr\'{e}alable, ensuite RAC avec Forward Checking et AC3 pr\'{e}alable.
+
+\bigskip
+
+\noindent
+\begin{tabularx}{\textwidth}{ |X|X|X|X| }
+\hline
+ & Grille A & Grille B & Grille C  \\
+\hline
+AC3 & t1 & t2 & t3 \\
+\hline 
+FC sans AC3 pr\'{e}alable & t1 & t2 & t3  \\
+\hline
+FC avec AC3 pr\'{e}alable & t1 & t2 & t3  \\
+\hline
+\end{tabularx}
+
+\subsubsection*{Conflict BackJumping}
+
+\subsubsection*{Applications sur des grilles de tailles plus grandes}
+
+La m\'{e}thode ( ) \'{e}tant la plus efficace, on l'applique sur des instances de grilles de tailles plus grandes.
+
+\bigskip
+
+\noindent
+\begin{tabularx}{\textwidth}{ |X|X|X| }
+\hline
+ & Temps d'\'{e}xecution & \% de solution trouv\'{e}e  \\
+\hline
+Taille = 10 & t1 & \% \\
+\hline 
+Taille = 100 & t2 & \%  \\
+\hline
+\end{tabularx}
+
+\newpage
 
 \section{Extension au cas pond\'{e}r\'{e}}
+
+\subsection{Mod\'{e}lisation}
+
+Petite intro. \bigskip
+
+\textbf{Variables :} ~ $x_{i}~,~\forall i \in \{1,...,m\}$
+
+\bigskip
+
+\textbf{Domaines :} Soit $dict$ un dictionnaire de mots admissibles:
+
+\begin{align*}
+D(x_{i}) = \{ X \in dict \}
+\end{align*}
+
+\bigskip
+
+\textbf{Contraintes :} Soit $l_{i}$ la taille du mot en $i$:
+
+\begin{equation} 
+len(x_{i}) = l_{i}
+\end{equation}
+\par
+Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
+\begin{equation} 
+x_{i}[q] = x_{j}[p]
+\end{equation}
+\par
+Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
+\begin{equation} 
+\textit{AllDiff}~(x_{1},x_{2},...x_{m})
+\end{equation}
+
+\subsection{Exp\'{e}rimentation}
+
+\subsection{Bonus}
 
 \newpage
 
