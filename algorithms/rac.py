@@ -116,7 +116,7 @@ def heuristic_next(words):
     return words[0]
 
 
-def heuristic_fewest_conditions(words):
+def heuristic_max_constraints(words):
     """
     Retourne le mot qui a le plus de contraintes binaires
     :param words: liste de mots
@@ -129,7 +129,7 @@ def heuristic_fewest_conditions(words):
     return words[choice(indices)]
 
 
-def heuristic_domain_size(words):
+def heuristic_min_domain(words):
     """
     Retourne le mot qui a le plus petit domaine
     :param words: liste de mots
@@ -143,7 +143,7 @@ def heuristic_domain_size(words):
     return words[choice(indices)]
 
 
-def heuristic_conditions_and_size(words):
+def heuristic_constraints_and_size(words):
     """
     Retourne le mot qui a le plus de contraintes binaires,
     en cas d'égalité celui d'entre eux qui a le plus petit domaine,
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     V = grid.words
     print(V)
     instanciation = []
-    # print(backtrack(V[:], instanciation, heuristic_fewest_conditions))
-    print(backtrack(V[:], instanciation, heuristic_conditions_and_size))
+    # print(backtrack(V[:], instanciation, heuristic_max_constraints))
+    print(backtrack(V[:], instanciation, heuristic_constraints_and_size))
     print([(i.id, j) for i, j in instanciation])
     # forward_checking(grid, [], heuristic_function=heuristic_next)
