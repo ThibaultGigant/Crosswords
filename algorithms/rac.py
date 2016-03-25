@@ -6,14 +6,17 @@ from random import choice
 sys.path.append(getcwd())
 from data_gestion.classes import Grid, Tree, Word
 from data_gestion.file_gestion import *
+from algorithms.arc_consistency import ac3
 
 
-def backtrack(V, i, heuristic_function):
+def backtrack(V, heuristic_function, uniq=True):
     """
     Backtracking avec forward checking
     :param V: Ensemble de variables non instanciées
-    :param i: instanciation courante
+    :param heuristic_function: fonction heuristique qui détermine quel mot sera instancié à chaque itération
+    :param uniq: True si un mot ne peut apparaître qu'une fois dans la grille, False sinon
     :type V: list[Word]
+    :type uniq: bool
     :return: Ensemble de solutions réalisables
     :rtype: bool
     """
@@ -24,88 +27,50 @@ def backtrack(V, i, heuristic_function):
     xk = heuristic_function(V)  # Prochaine variable à instancier
     V.remove(xk)
     words = xk.domain.list_words()
+    # print("Tentative d'instanciation du mot " + str(xk.id) + " parmi les mots : " + str(words))
     if words == [""]:
         return False
     # On garde en mémoire les domaines qui pourraient être modifiés
-    domains = [(word, deepcopy(word.domain)) for word, ind1, ind2 in xk.binary_constraints] + [(xk, xk.domain)]
+    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}  # type: dict[Word, Tree]
+    domains[xk] = deepcopy(xk.domain)
+
     for word in words:
+        # print("Instanciation de " + str(xk.id) + " à " + word)
         xk.domain = Tree(word)  # Affectation de word à la variable
-        xk.update_related_variables_domain()  # forward check
 
-        i.append((xk, word))
-        if backtrack(V[:], i, heuristic_function):
-            return True
-        else:
-            i.remove((xk, word))
+        # forward check avec récupèration des mots dont les domaines ont été modifiés
+        # print("Avant modification")
+        # for w in domains.keys():
+        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
+        modif = xk.update_related_variables_domain()
+
+        # Si on veut qu'il y ait qu'une fois un mot dans une grille,
+        # il faut le retirer du domaine des autres mots de même taille
+        if uniq:
+            same_size_words = [w for w in V if w.length == xk.length]
+            same_modif = []
+            for w in same_size_words:
+                if w.domain.remove_word(word) and w not in modif:
+                    same_modif.append(w)
+
+        # print("Après modification")
+        # for w in domains.keys():
+        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
+
+        # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
+        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(V[:], heuristic_function, uniq):
+            # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
-            for w, domain in domains:
-                w.domain = deepcopy(domain)
+            for w in modif:
+                w.domain = deepcopy(domains[w])
+            if uniq:
+                for w in same_modif:
+                    w.domain.add_word(word)
+        else:
+            return True
+    # print("Retour arrière depuis " + str(xk.id))
+    xk.domain = deepcopy(domains[xk])
     return False
-
-
-def consistance_locale(grid, assignment):
-    consistant = True
-    constraints = grid.constraints
-
-    for constraint in constraints:
-        word1, word2, index1, index2 = constraint
-        if (word1 == assignment):
-            consistant = word1.respect_binary_constraint(word2, index1, index2)
-        if (word2 == assignment):
-            consistant = word2.respect_binary_constraint(word1, index2, index1)
-        if not consistant:
-            break
-    return consistant
-
-
-def forward_checking(grid, i, heuristic_function):
-    """
-    Algorithme de forward checking
-    :param grid: grille sur laquelle appliquer l'algorithme
-    :param i: instanciation courante
-    :param heuristic_function: fonction qui choisit le mot à instancier à chaque tour de boucle
-    :type grid: Grid
-    :return:
-    :rtype: list[Grid]
-    """
-    # for word in grid.words:
-    #    print(word.domain.list_words())
-
-    V = grid.words  # Ensemble des variables à instancier
-    if not V:
-        return i
-    else:
-        xk = heuristic_function(V)  # Prochaine variable à instancier
-        Dk = xk.domain.list_words()  # Domaine de la variable à instancier
-        for v in Dk:
-            if check_forward(xk, v, V[1:]):
-                i += [(xk, v)]
-                return forward_checking(grid, i, heuristic_function)
-    return None
-
-
-def check_forward(xk, v, V):
-    """
-    Verifie la consistance après instanciation
-    :param xk: Variable à instancier
-    :param v: Valeur de l'instanciation
-    :param V: Ensemble des variables à instancier
-    :return:
-    """
-    consistant = True
-    for xj in V:
-        if consistant:
-            Dj = xj.domain.list_words()
-            for v2 in Dj:
-                if not consistance((xj, v2), (xk, v)):
-                    Dj.remove(v2)
-        if not xj.domain.list_words():
-            consistant = False
-    return consistant
-
-
-def consistance(assign1, assign2):
-    return True
 
 
 def heuristic_next(words):
@@ -137,7 +102,6 @@ def heuristic_min_domain(words):
     :rtype: Word
     """
     domains_size = [word.domain.cardinality() for word in words]
-    domains_size.sort()
     min_domain = min(domains_size)
     indices = [i for i, j in enumerate(domains_size) if j == min_domain]
     return words[choice(indices)]
@@ -156,22 +120,38 @@ def heuristic_constraints_and_size(words):
     max_constraints = max(nb_constraints)
     indices = [i for i, j in enumerate(nb_constraints) if j == max_constraints]
     if len(indices) > 1:
-        domains_size = []
-        for i in indices:
-            domains_size.append((i, words[i].domain.cardinality()))
-        domains_size.sort(key=lambda x: x[1])
-        min_domain = min(domains_size)
-        indices = [i for i, j in enumerate(domains_size) if j == min_domain]
+        return heuristic_min_domain([words[i] for i in indices])
+    return words[choice(indices)]
+
+
+def heuristic_size_and_constraints(words):
+    """
+    Retourne le mot qui a le plus de contraintes binaires,
+    en cas d'égalité celui d'entre eux qui a le plus petit domaine,
+    en cas d'égalité on en choisit un au hasard
+    :param words: liste de mots
+    :type words: list[Word]
+    :rtype: Word
+    """
+    domains_size = [word.domain.cardinality() for word in words]
+    min_domain = min(domains_size)
+    indices = [i for i, j in enumerate(domains_size) if j == min_domain]
+    if len(indices) > 1:
+        return heuristic_max_constraints([words[i] for i in indices])
     return words[choice(indices)]
 
 
 if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     grid = read_grid(sys.argv[2], dico)
+    ac3(grid)
     V = grid.words
     print(V)
-    instanciation = []
-    # print(backtrack(V[:], instanciation, heuristic_max_constraints))
-    print(backtrack(V[:], instanciation, heuristic_constraints_and_size))
-    print([(i.id, j) for i, j in instanciation])
-    # forward_checking(grid, [], heuristic_function=heuristic_next)
+    # res = backtrack(V[:], heuristic_max_constraints)
+    # res = backtrack(V[:], heuristic_constraints_and_size, False)
+    # res = backtrack(V[:], heuristic_next, True)
+    # res = backtrack(V[:], heuristic_min_domain, False)
+    res = backtrack(V[:], heuristic_size_and_constraints, True)
+    print(res)
+    if res:
+        print([(w.id, w.domain.list_words()[0]) for w in V])

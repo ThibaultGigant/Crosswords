@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from tkinter import *
+try:
+    from tkinter import *
+except:
+    from Tkinter import *
 import sys
 
 cell_size = 30
 colors = {0: "white", 1: "black"}
 
+
 class CellGrid(Canvas):
     def __init__(self, master, ligne, colonne, taille, Grille):
-        Canvas.__init__(self,master,width=taille*colonne,height=taille*ligne)
+        Canvas.__init__(self, master, width=taille * colonne, height=taille * ligne)
         self.taille = taille
         self.grid = []
         for l in range(ligne):
@@ -23,6 +27,7 @@ class CellGrid(Canvas):
             for cell in l:
                 cell.draw()
 
+
 class Cell():
     def __init__(self, master, x, y, size, value):
         self.master = master
@@ -32,26 +37,28 @@ class Cell():
         self.fill = "white"
         self.value = value
 
-    def setValue(self,value):
+    def setValue(self, value):
         self.value = value
 
     def draw(self):
         if self.master != None:
-            xmin = self.abs*self.size
-            xmax = xmin+self.size
-            ymin = self.ord*self.size
-            ymax = ymin+self.size
-            self.master.create_rectangle(xmin, ymin, xmax, ymax, fill=colors[int(self.value)], outline = "gray")
+            xmin = self.abs * self.size
+            xmax = xmin + self.size
+            ymin = self.ord * self.size
+            ymax = ymin + self.size
+            self.master.create_rectangle(xmin, ymin, xmax, ymax, fill=colors[int(self.value)], outline="gray")
+
 
 def grille(root, G):
-    resGrille=CellGrid(root, len(G), len(G[0]), cell_size ,G)
+    resGrille = CellGrid(root, len(G), len(G[0]), cell_size, G)
     resGrille.pack()
     resGrille.update()
-    #resGrille.postscript(file="grille.ps", colormode='color')
-    Label(root,text="\n").pack()
-    #b1=Button(root, text="Afficher parcours", width=20, command=lambda:chemin(root,D1,D2,F1,F2,direction,resGrille,C))
-    #b1.pack()
-    Label(root,text="\n").pack()
+    # resGrille.postscript(file="grille.ps", colormode='color')
+    Label(root, text="\n").pack()
+    # b1=Button(root, text="Afficher parcours", width=20, command=lambda:chemin(root,D1,D2,F1,F2,direction,resGrille,C))
+    # b1.pack()
+    Label(root, text="\n").pack()
+
 
 def read_file(file_name):
     """
@@ -79,10 +86,9 @@ def read_file(file_name):
     fp.close()
     return width, height, grid
 
+
 if __name__ == '__main__':
     M, N, G, = read_file(sys.argv[1])
-    root=Tk()
+    root = Tk()
     grille(root, G)
     root.mainloop()
-
-

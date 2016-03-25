@@ -218,6 +218,7 @@ class Word:
         :param word: mot avec lequel il y a contrainte
         :param letter_index1: indice de la lettre commune dans le mot courant
         :param letter_index2: indice de la lettre commune dans le mot passé en paramètre
+        :type word: Word
         :return: True si le domaine a été modifié, false sinon
         :rtype: bool
         """
@@ -225,10 +226,6 @@ class Word:
         this_letters = self.domain.letters_at_index(letter_index1)
         other_letters = word.domain.letters_at_index(letter_index2)
         union_letters = this_letters.intersection(other_letters)
-        print("respect binary " + str(word.id) + " indice " + str(letter_index1) + " et " + str(letter_index2))
-        print(this_letters)
-        print(other_letters)
-        print(union_letters)
 
         # print(this_letters, other_letters, union_letters)
 
@@ -255,17 +252,17 @@ class Word:
     def update_related_variables_domain(self):
         """
         Ecume le domaine des mots liés au mot courant par une contrainte binaire en fonction de l'instanciation courante
-        :return: True si une modification a été faite, False sinon
-        :rtype: bool
+        :return: liste des mots dont les domaines ont été modifiés
+        :rtype: list[Word]
         """
-        modif = False
+        modif = []
         for word, index1, index2 in self.binary_constraints:
             this_letters = self.domain.letters_at_index(index1)
             other_letters = word.domain.letters_at_index(index2)
             union_letters = this_letters.intersection(other_letters)
             if other_letters != union_letters:
                 word.domain.respect_unary_constraints(index2, union_letters)
-                modif = True
+                modif.append(word)
         return modif
 
 
@@ -285,6 +282,7 @@ class Tree:
         """
         self.children = children if children else {}
         self.level = level
+        self.card = 0
         if level == 0:
             self.data = ""
             self.add_word(word)
@@ -303,12 +301,26 @@ class Tree:
         """
         return self.data
 
+    def contains(self, word):
+        """
+        Dis si l'arbre contient le mot demandé
+        :param word: mot dont on veut tester l'appartenance au domaine courant
+        :type word: str
+        :return: True si l'arbre contient le mot, False sinon
+        """
+        if word and word[0] in self.children:
+            return self.children[word[0]].contains(word[1:])
+        if (not word) and ("" in self.children):
+            return True
+        return False
+
     def add_word(self, word):
         """
         Ajoute le mot à l'arbre courant
         :param word: mot à rajouter à l'arbre
         :type word: str
         """
+        self.card += 1
         if word and word[0] not in self.children:
             self.children[word[0]] = Tree(word, level=self.level + 1)
         elif word and word[0] in self.children:
@@ -316,13 +328,37 @@ class Tree:
         else:
             self.children[""] = None
 
+    def remove_word(self, word):
+        """
+        Retire le mot de l'arbre courant
+        :param word: mot à retirer
+        :type word: str
+        :return: True si le mot a bien été trouvé et retiré, False s'il n'a pas été trouvé
+        :rtype: bool
+        """
+        if word:
+            if word[0] in self.children:
+                modif = self.children[word[0]].remove_word(word[1:])
+                if modif:
+                    self.card -= 1
+                    if not self.children[word[0]].children:
+                        del self.children[word[0]]
+                return modif
+        elif "" in self.children:
+            self.card -= 1
+            del self.children[""]
+            return True
+
+        return False
+
     def cardinality(self):
         """
         Donne le nombre de mots contenus dans l'arbre, c'est-à-dire le nombre de feuilles
         :return: nombre de mots contenus dans l'arbre
         :rtype: int
         """
-        return sum([1 if not tree else tree.cardinality() for tree in self.children.values()])
+        return self.card
+        # return sum([1 if not tree else tree.cardinality() for tree in self.children.values()])
 
     def list_words(self):
         """
@@ -338,7 +374,7 @@ class Tree:
                         res.append(self.data + word)
                 else:
                     res.append(self.data)
-            res.sort()
+            # res.sort()
             return res
         else:
             return [self.data]
@@ -350,32 +386,34 @@ class Tree:
         :param letters_list: liste de lettres acceptées à cet indice
         :type letter_index: int
         :type letters_list: list[str]
-        :return: True si après écumage, le noeud courant n'a plus de fils, False sinon
-        :rtype: bool
+        :return: nombre de mots supprimés par cette action
+        :rtype: int
         """
+        nb_removed = 0
         # Si on est au niveau demandé, on regarde les lettres contenues dans les enfants
         if self.level == letter_index:
             if self.children:
-                letters = []
-                for letter in self.children.keys():
-                    if letter not in letters_list:
-                        letters.append(letter)
+                # Récupération des lettres qui ne sont pas en accord avec la contrainte
+                letters = [letter for letter in self.children.keys() if letter not in letters_list]
                 for letter in letters:
+                    nb_removed += self.children[letter].cardinality()
                     del self.children[letter]
-                if not self.children:
-                    return True
         # sinon on appelle récursivement sur les enfants, en vérifiant bien que c'est possible
         else:
             if self.children:
+                # Récupération des lettres qui ne sont pas en accord avec la contrainte
                 letters = []
                 for letter, child in self.children.items():
-                    if child and child.respect_unary_constraints(letter_index, letters_list):
-                        letters.append(letter)
+                    if child:
+                        nb_removed += child.respect_unary_constraints(letter_index, letters_list)
+                        if child.cardinality() == 0:
+                            letters.append(letter)
                 for letter in letters:
                     del self.children[letter]
-                if not self.children or list(self.children.keys()) == [""]:
-                    return True
-        return False
+                # if not self.children or list(self.children.keys()) == [""]:
+                #     return True
+        self.card -= nb_removed
+        return nb_removed
 
     def letters_at_index(self, letter_index):
         """
@@ -409,13 +447,54 @@ class Tree:
 
 
 def test_tree():
-    t = Tree("representative")
-    t.add_word("test")
-    t.add_word("representant")
+    t = Tree("top")
+    t.add_word("tap")
+    t.add_word("tou")
+    t.add_word("cou")
+    t.add_word("car")
+    t.add_word("cours")
+    t.add_word("cous")
+    t.add_word("course")
+    t.add_word("courses")
     print(t.list_words(), t.cardinality())
-    t.respect_unary_constraints(2, ["p", "s", "i"])
-    print(t.list_words())
+    t.respect_unary_constraints(1, ["t", "o"])
+    print(t.list_words(), t.cardinality())
     print(t.letters_at_index(10))
+
+
+def test_suppression():
+    t1 = Tree("top")
+    t1.add_word("tap")
+    t1.add_word("tou")
+    t1.add_word("cou")
+    t1.add_word("car")
+    t1.add_word("cours")
+    t1.add_word("cous")
+    t1.add_word("course")
+    t1.add_word("courses")
+
+    t2 = Tree("four")
+    t2.add_word("cour")
+    t2.add_word("sour")
+    t2.add_word("soir")
+
+    print("Le domaine 1 contient cou : " + str(t1.contains("cou")))
+    print("Le domaine 2 contient cou : " + str(t2.contains("cou")))
+
+    print("Avant suppression de cou des domaines")
+    print(t1.list_words())
+    print("taille du domaine 1 : " + str(len(t1.list_words())))
+    print(t2.list_words())
+    print("Résultat de la suppression du mot cou dans les deux domaines :")
+    print("Domaine 1 : " + str(t1.remove_word("cou")))
+    print("Domaine 2 : " + str(t2.remove_word("cou")))
+    print("Après suppression de cou des domaines")
+    print(t1.list_words())
+    print("taille du domaine 1 : " + str(len(t1.list_words())))
+    print(t2.list_words())
+
+    print("Le domaine 1 contient cou : " + str(t1.contains("cou")))
+    print("Le domaine 2 contient cou : " + str(t2.contains("cou")))
 
 
 def test_contraintes():
@@ -468,4 +547,5 @@ def test_contraintes():
 
 if __name__ == '__main__':
     test_tree()
-    test_contraintes()
+    # test_contraintes()
+    # test_suppression()

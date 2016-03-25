@@ -30,7 +30,8 @@ def read_dictionary(file_name):
             # Pour supprimer les accents
             mot = normalize("NFKD", mot).encode("ascii", "ignore").decode("ascii")
             if len(mot) in dico:
-                dico[len(mot)].add_word(mot)
+                if not dico[len(mot)].contains(mot):
+                    dico[len(mot)].add_word(mot)
             else:
                 dico[len(mot)] = Tree(mot)
             ligne = fp.readline()
