@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import sys
 from os import getcwd
 sys.path.append(getcwd())
-from unicodedata import normalize
 from copy import deepcopy
 
 
@@ -10,7 +11,7 @@ class Grid:
     Classe représentant une grille de mots croisés
     """
 
-    def __init__(self, grid, dictionary):
+    def __init__(self, grid, dictionary=None):
         """
         Constructeur
         :param grid: grille récupérée directement à partir du fichier, non transformée (liste de listes de str)
@@ -20,6 +21,19 @@ class Grid:
         self.dictionary = dictionary
         self.constraints = []  # type: list[(Word, Word, int, int)]
         self.words = self.grid_to_words()
+        self.instanciated_words = []
+        self.uninstanciated_words = self.words[:]
+
+    def set_dictionary(self, dictionary):
+        """
+        Change le dictionnaire de la grille
+        :param dictionary: Dictionnaire des domaines contenant tous les mots, triés par nombre de lettres des mots
+        :type dictionary: Tree
+        """
+        self.dictionary = dictionary
+        for word in self.words:
+            word.domain = deepcopy(dictionary[word.length])
+            word.respect_unary_constraints()
 
     def grid_to_words(self):
         """
@@ -57,12 +71,10 @@ class Grid:
             length = word.length
             for i in range(length):
                 if word.horizontal and self.grid[coord[0]][coord[1] + i] not in ['0', '1']:
-                    letter = normalize("NFKD",
-                                       self.grid[coord[0]][coord[1] + i]).encode("ascii", "ignore").decode("ascii")
+                    letter = self.grid[coord[0]][coord[1] + i]
                     word.add_unary_constaint(i, letter)
                 if (not word.horizontal) and self.grid[coord[0] + i][coord[1]] not in ['0', '1']:
-                    letter = normalize("NFKD",
-                                       self.grid[coord[0] + i][coord[1]]).encode("ascii", "ignore").decode("ascii")
+                    letter = self.grid[coord[0] + i][coord[1]]
                     word.add_unary_constaint(i, letter)
 
         # Ajout des contraintes binaires (entre deux mots)
@@ -151,15 +163,19 @@ class Word:
         :return: 
         """
         self.length = length
-        self.domain = deepcopy(dictionary[length])  # type: Tree
         self.coord = coord
+        self.list_coordinates = [(coord[0], coord[1] + i) if horizontal else (coord[0] + i, coord[1]) for i in
+                                 range(length)]
+        self.id = Word.word_id
+        Word.word_id += 1
         self.horizontal = horizontal
+        if dictionary:
+            self.domain = deepcopy(dictionary[length])  # type: Tree
+        else:
+            self.domain = None
         # liste de tuples de contraintes binaires : (word, indices of common letter) :
         self.binary_constraints = []  # type: list[(Word, int, int)]
         self.unary_constraints = []  # liste de tuples de contraintes unaires : (word, index of common letter)
-        self.list_coordinates = [(coord[0], coord[1] + i) if horizontal else (coord[0] + i, coord[1]) for i in range(length)]
-        self.id = Word.word_id
-        Word.word_id += 1
 
     def __str__(self):
         """
@@ -202,12 +218,16 @@ class Word:
         :type letter: str
         """
         self.unary_constraints.append((letter_index, letter))
+        if self.domain:
+            self.domain.respect_unary_constraints(letter_index, [letter])
 
     def respect_unary_constraints(self):
         """
         Ecume le domaine du mot par rapport à ses contraintes unaires
         :return: True si le domaine du mot n'est pas vide après écumage, False sinon
         """
+        if not self.domain:
+            return False
         for constraint in self.unary_constraints:
             self.domain.respect_unary_constraints(constraint[0], [constraint[1]])
         return not self.domain.is_empty()
@@ -222,6 +242,8 @@ class Word:
         :return: True si le domaine a été modifié, false sinon
         :rtype: bool
         """
+        if not self.domain:
+            return False
         modif = False
         this_letters = self.domain.letters_at_index(letter_index1)
         other_letters = word.domain.letters_at_index(letter_index2)
@@ -244,6 +266,8 @@ class Word:
         :return: True si un domaine a été modifié, False sinon
         :rtype: bool
         """
+        if not self.domain:
+            return False
         modif = []
         for constraint in self.binary_constraints:
             modif.append(self.respect_binary_constraint(constraint[0], constraint[1], constraint[2]))
@@ -374,7 +398,8 @@ class Tree:
                         res.append(self.data + word)
                 else:
                     res.append(self.data)
-            # res.sort()
+            if self.level == 0:
+                res.sort()
             return res
         else:
             return [self.data]

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 from os import getcwd
 sys.path.append(getcwd())
@@ -26,7 +28,7 @@ def read_dictionary(file_name):
     try:
         ligne = fp.readline()
         while ligne:
-            mot = ligne.strip().lower()
+            mot = ligne.strip().upper()
             # Pour supprimer les accents
             mot = normalize("NFKD", mot).encode("ascii", "ignore").decode("ascii")
             if len(mot) in dico:
@@ -63,11 +65,13 @@ def read_grid(file_name, dictionary):
 
     # récupération de la grille à proprement parler
     grid = []
-    for i in range(height):
+    for _ in range(height):
         line = fp.readline().split()
         if len(line) != width:
             raise IOError("Wrong file format: wrong number of items in a line")
         else:
+            for i in range(len(line)):
+                line[i] = normalize("NFKD", line[i]).encode("ascii", "ignore").decode("ascii").upper()
             grid.append(line)
 
     fp.close()

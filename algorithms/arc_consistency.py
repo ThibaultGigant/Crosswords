@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys, time
 from os import getcwd
 sys.path.append(getcwd())
