@@ -3,13 +3,13 @@
 import sys
 from os import getcwd
 from copy import deepcopy
-from random import choice
-from time import time, sleep
+from time import time
 
 sys.path.append(getcwd())
 from data_gestion.classes import Grid, Word
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
+from algorithms.heuristics import *
 
 
 def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
@@ -39,7 +39,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         return False
 
     # On garde en mémoire les domaines qui pourraient être modifiés
-    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}  # type: dict[Word, Tree]
+    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}
     domains[xk] = deepcopy(xk.domain)
 
     for word in words:
@@ -89,74 +89,6 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
     return False
-
-
-def heuristic_next(words):
-    """
-    Retourne la première variable parmi celles qui ne sont pas encore instanciée
-    :param domain: liste de mots
-    """
-    return words[0]
-
-
-def heuristic_max_constraints(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    nb_constraints = [len(i.binary_constraints) for i in words]
-    max_constraints = max(nb_constraints)
-    indices = [i for i, j in enumerate(nb_constraints) if j == max_constraints]
-    return words[choice(indices)]
-
-
-def heuristic_min_domain(words):
-    """
-    Retourne le mot qui a le plus petit domaine
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    domains_size = [word.domain.cardinality() for word in words]
-    min_domain = min(domains_size)
-    indices = [i for i, j in enumerate(domains_size) if j == min_domain]
-    return words[choice(indices)]
-
-
-def heuristic_constraints_and_size(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires,
-    en cas d'égalité celui d'entre eux qui a le plus petit domaine,
-    en cas d'égalité on en choisit un au hasard
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    nb_constraints = [len(i.binary_constraints) for i in words]
-    max_constraints = max(nb_constraints)
-    indices = [i for i, j in enumerate(nb_constraints) if j == max_constraints]
-    if len(indices) > 1:
-        return heuristic_min_domain([words[i] for i in indices])
-    return words[choice(indices)]
-
-
-def heuristic_size_and_constraints(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires,
-    en cas d'égalité celui d'entre eux qui a le plus petit domaine,
-    en cas d'égalité on en choisit un au hasard
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    domains_size = [word.domain.cardinality() for word in words]
-    min_domain = min(domains_size)
-    indices = [i for i, j in enumerate(domains_size) if j == min_domain]
-    if len(indices) > 1:
-        return heuristic_max_constraints([words[i] for i in indices])
-    return words[choice(indices)]
 
 
 if __name__ == '__main__':

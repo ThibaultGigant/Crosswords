@@ -28,7 +28,7 @@ class Grid:
         """
         Change le dictionnaire de la grille
         :param dictionary: Dictionnaire des domaines contenant tous les mots, triés par nombre de lettres des mots
-        :type dictionary: Tree
+        :type dictionary: dict[int, Tree]
         """
         self.dictionary = dictionary
         for word in self.words:
@@ -132,6 +132,19 @@ class Grid:
         :rtype: int
         """
         return len(self.words)
+
+    def is_word_already_in(self, word):
+        """
+        Renvoie les mots de type Word de la grille déjà instanciés à la valeur "word"
+        :param word: mot dont on veut savoir s'il existe déjà
+        :type word: str
+        :return: liste des mots instanciés à "word"
+        """
+        res = []
+        for w in self.instanciated_words:
+            if w.domain.list_words() == [word]:
+                res.append(w)
+        return res
 
     def __str__(self):
         """
@@ -291,7 +304,7 @@ class Word:
 
     def consistant(self):
         """
-
+        Regarde si une instanciation d'un mot est en conflit avec les mots avec lesquels il est
         :return:
         """
         modif = []

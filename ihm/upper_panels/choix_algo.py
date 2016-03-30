@@ -5,7 +5,10 @@ from ihm.statics import choose_file
 from os.path import isfile
 from threading import Thread
 from data_gestion.file_gestion import *
-from algorithms.rac2 import *
+from algorithms.arc_consistency import ac3
+from algorithms.heuristics import *
+from algorithms.rac2 import backtrack
+from algorithms.cbj import CBJ
 
 
 # Variables globales
@@ -164,8 +167,13 @@ class ChoixAlgo(Frame):
         if self.var_algo.get() == 0:
             thread = Thread(None, backtrack, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
                             {"uniq": self.var_uniq.get(), "stop": True, "mainwindow": self.parent.parent})
-            thread.start()
             # backtrack(self.parent.parent.grid, heuristic[self.var_heur.get()], self.var_uniq.get(), True, self.parent.parent)
+        else:
+            thread = Thread(None, CBJ, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
+                            {"uniq": self.var_uniq.get()})
+
+        thread.start()
+        self.parent.parent.display_grid()
 
     def affiche_wrong_dico(self, var_test, var_affichage):
         """
