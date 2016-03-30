@@ -62,6 +62,7 @@ def backtrack(V, heuristic_function, uniq=True):
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
         if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(V[:], heuristic_function, uniq):
+            # if not backtrack(V[:], heuristic_function, uniq):
             # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
             for w in modif:
@@ -157,9 +158,9 @@ if __name__ == '__main__':
     # print(V)
     # res = backtrack(V[:], heuristic_max_constraints)
     # res = backtrack(V[:], heuristic_constraints_and_size, False)
-    res = backtrack(V[:], heuristic_next, True)
+    # res = backtrack(V[:], heuristic_next, True)
     # res = backtrack(V[:], heuristic_min_domain, False)
-    # res = backtrack(V[:], heuristic_size_and_constraints, True)
+    res = backtrack(V[:], heuristic_size_and_constraints, True)
     print("Temps de calcul de l'algo : " + str(time()-t))
     print("Temps total : " + str(time()-t1))
     print(res)

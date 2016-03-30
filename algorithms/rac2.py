@@ -4,15 +4,15 @@ import sys
 from os import getcwd
 from copy import deepcopy
 from random import choice
-from time import time
+from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, Tree, Word
+from data_gestion.classes import Grid, Word
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 
 
-def backtrack(grid, heuristic_function, uniq=True):
+def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     """
     Backtracking avec forward checking
     :param grid: grille sur laquelle on lance l'algorithme
@@ -24,7 +24,7 @@ def backtrack(grid, heuristic_function, uniq=True):
     :rtype: bool
     """
     # On vérifie qu'il reste des mots à instancier
-    print("Nombre de mots non-instanciés : " + str(len(grid.uninstanciated_words)))
+    # print("Nombre de mots non-instanciés : " + str(len(grid.uninstanciated_words)))
     if not grid.uninstanciated_words:
         return True
 
@@ -34,7 +34,10 @@ def backtrack(grid, heuristic_function, uniq=True):
     words = xk.domain.list_words()
     # print("Tentative d'instanciation du mot " + str(xk.id) + " parmi les mots : " + str(words))
     if words == [""]:
+        grid.uninstanciated_words.insert(0, xk)
+        grid.instanciated_words.remove(xk)
         return False
+
     # On garde en mémoire les domaines qui pourraient être modifiés
     domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}  # type: dict[Word, Tree]
     domains[xk] = deepcopy(xk.domain)
@@ -58,12 +61,20 @@ def backtrack(grid, heuristic_function, uniq=True):
                 if w.domain.remove_word(word) and w not in modif:
                     same_modif.append(w)
 
+        if stop:
+            # input("Appuyez sur la touche ENTREE pour continuer...")
+            if mainwindow:
+                mainwindow.grid = grid
+                mainwindow.display_grid()
+
+
         # print("Après modification")
         # for w in domains.keys():
         #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq):
+        # if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
+        if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
             # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
             for w in modif:
@@ -153,7 +164,8 @@ if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     print("Temps de création du dictionnaire : " + str(time()-t1))
     t = time()
-    grid1 = read_grid(sys.argv[2], dico)
+    grid1 = read_grid(sys.argv[2])
+    grid1.set_dictionary(dico)
     print("Temps de création de la grille: " + str(time()-t))
     t = time()
     ac3(grid1)

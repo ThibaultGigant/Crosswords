@@ -2,6 +2,7 @@
 
 try:
     from tkinter import *
+    import tkinter.font
 except:
     from Tkinter import *
 
@@ -20,27 +21,47 @@ class CellGrid(Canvas):
     """
     Classe pour l'affichage de la grille entière
     """
-    def __init__(self, master, nb_lignes, nb_colonnes, taille, Grille):
-        Canvas.__init__(self, master, width=taille * (nb_colonnes + 2), height=taille * (nb_lignes + 2))
+    def __init__(self, master, grid, taille=20):
+        Canvas.__init__(self, master, width=taille * (grid.get_width() + 2), height=taille * (grid.get_height() + 2))
         self.parent = master
         self.taille = taille
-        self.grid = []
-        self.creation_cellules(nb_lignes, nb_colonnes, Grille)
+        self.cells = []
+        self.grid = grid
+        self.written = []
+        self.creation_cellules(grid.get_height(), grid.get_width(), grid.grid)
         self.draw()
-        self.config(scrollregion=[0, 0, taille * (nb_colonnes + 2), taille * (nb_lignes + 2)])
+        self.update_words()
+        self.scale(ALL, -1, -1, self.taille, self.taille)
+        self.config(scrollregion=[0, 0, taille * (grid.get_width() + 2), taille * (grid.get_width() + 2)])
 
-    def creation_cellules(self, nb_lignes, nb_colonnes, Grille):
+    def creation_cellules(self, nb_lignes, nb_colonnes, grid):
+        """
+        Crée les cellules et les ajoute à la liste self.cells
+        """
         for l in range(nb_lignes):
             line = []
             for col in range(nb_colonnes):
-                line.append(Cell(self, col, l, Grille[l][col]))
-            self.grid.append(line)
+                line.append(Cell(self, col, l, grid[l][col]))
+            self.cells.append(line)
 
     def draw(self):
-        for l in self.grid:
+        """
+        Affiche les cellules crées
+        """
+        for l in self.cells:
             for cell in l:
                 cell.draw()
-        self.scale(ALL, -1, -1, cell_size, cell_size)
+
+    def update_words(self):
+        """
+        Affiche les mots déjà instanciés par l'algorithme
+        """
+        for word in self.grid.instanciated_words:
+            mot = word.domain.list_words()[0]
+            for (ind, (y, x)) in enumerate(word.list_coordinates):
+                if (x, y) not in self.written:
+                    self.written.append((x, y))
+                    self.create_text(x+1/2, y+1/2, text=mot[ind], fill="grey")
 
 
 class Cell:
@@ -66,7 +87,9 @@ class Cell:
             ymax = ymin + 1
             self.master.create_rectangle(xmin, ymin, xmax, ymax, fill=self.fill, outline="gray")
             if self.value not in ["0", "1"]:
-                self.master.create_text(self.abs + 1/2, self.ord + 1/2, text=self.value)
+                self.master.written.append((self.abs, self.ord))
+                self.master.create_text(self.abs + 1/2, self.ord + 1/2, text=self.value,
+                                        font=tkinter.font.Font(weight='bold'))
 
 
 def grille(root, G):
@@ -78,7 +101,7 @@ def grille(root, G):
     :return: Widget contenant la grille
     :rtype: CellGrid
     """
-    return CellGrid(root, G.get_height(), G.get_width(), cell_size, G.grid)
+    return CellGrid(root, G)
 
 
 if __name__ == '__main__':

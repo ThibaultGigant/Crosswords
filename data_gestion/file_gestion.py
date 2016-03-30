@@ -44,7 +44,7 @@ def read_dictionary(file_name):
     return dico
 
 
-def read_grid(file_name, dictionary):
+def read_grid(file_name, dictionary=None):
     """
     Lit un fichier texte contenant une grille à compléter
     :param file_name: chemin relatif du fichier contenant la grille

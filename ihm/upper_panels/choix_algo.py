@@ -1,25 +1,21 @@
 # -*- coding: utf-8 -*-
-
-try:
-    from tkinter import *
-except:
-    from Tkinter import *
+from tkinter import *
+from tkinter.messagebox import showerror
 from ihm.statics import choose_file
 from os.path import isfile
+from threading import Thread
+from data_gestion.file_gestion import *
+from algorithms.rac2 import *
 
 
-def affiche_wrong_file(var_test, var_affichage):
-    """
-    Affiche un message s'il n'y a pas de fichier de chemin relatif voulu
-    :param var_test: chemin relatif du fichier
-    :param var_affichage: variable à changer pour l'affichage du message
-    :type var_test: StringVar
-    :type var_affichage: StringVar
-    """
-    if not isfile(var_test.get()):
-        var_affichage.set("Fichier Inexistant")
-    else:
-        var_affichage.set("")
+# Variables globales
+heuristic = {
+    0: heuristic_next,
+    1: heuristic_min_domain,
+    2: heuristic_max_constraints,
+    3: heuristic_size_and_constraints,
+    4: heuristic_constraints_and_size
+}
 
 
 class ChoixAlgo(Frame):
@@ -30,6 +26,17 @@ class ChoixAlgo(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self.parent = master
+        # Définition de variables
+        self.var_dico = StringVar()
+        self.var_wrong_dico = StringVar()
+        self.var_grille = StringVar()
+        self.var_wrong_grille = StringVar()
+        self.var_ac3 = BooleanVar()
+        self.var_uniq = BooleanVar()
+        self.var_algo = IntVar()
+        self.var_heur = IntVar()
+        self.dico = None
+
         self.choice_buttons()
 
     def choice_buttons(self):
@@ -40,23 +47,22 @@ class ChoixAlgo(Frame):
         self.choice_grille()
         self.choice_algo()
         self.choice_heuristique()
+        self.launch_button()
 
     def choice_dico(self):
         """
         Affiche les widgets liés au choix du dictionnaire
         """
         # Définition des variables
-        var_dico = StringVar()
-        var_wrong_dico = StringVar()
-        var_wrong_dico.set("")
+        self.var_wrong_dico.set("")
 
         # Définition des widgets
         label = Label(self, text="Choisir un dictionnaire et une grille :", font=("", 16))
 
         label_dico = Label(self, text="Dictionnaire :")
-        entry_dico = Entry(self, textvariable=var_dico)
-        btn_dico = Button(self, text="...", command=lambda: var_dico.set(choose_file("Choisir un Dictionnaire")))
-        label_wrong_dico = Label(self, textvariable=var_wrong_dico)
+        entry_dico = Entry(self, textvariable=self.var_dico)
+        btn_dico = Button(self, text="...", command=lambda: self.var_dico.set(choose_file("Choisir un Dictionnaire")))
+        label_wrong_dico = Label(self, textvariable=self.var_wrong_dico)
 
         # Affichage des widgets
         label.grid(row=0, column=0, columnspan=4)
@@ -66,26 +72,22 @@ class ChoixAlgo(Frame):
         label_wrong_dico.grid(row=1, column=3)
 
         # Affichage d'un message si le fichier est erroné
-        var_dico.trace("w",
-                       lambda name, index, mode, var_test=var_dico, var_affichage=var_wrong_dico: affiche_wrong_file(
-                           var_test, var_affichage))
+        self.var_dico.trace("w", lambda name, index, mode, var_test=self.var_dico, var_affichage=self.var_wrong_dico: self.affiche_wrong_dico(var_test, var_affichage))
 
     def choice_grille(self):
         """
         Affichage des widgets liés au choix de la grille
         """
         # Définition des variables
-        var_grille = StringVar()
-        var_wrong_grille = StringVar()
-        var_wrong_grille.set("")
+        self.var_wrong_grille.set("")
         if self.parent.parent.grid:
-            var_grille.set("Grille affichée")
+            self.var_grille.set("Grille affichée")
 
         # Définition des widgets
         label_grille = Label(self, text="Grille :")
-        entry_grille = Entry(self, textvariable=var_grille)
-        btn_grille = Button(self, text="...", command=lambda: var_grille.set(choose_file("Choisir une grille")))
-        label_wrong_grid = Label(self, textvariable=var_wrong_grille)
+        entry_grille = Entry(self, textvariable=self.var_grille)
+        btn_grille = Button(self, text="...", command=lambda: self.var_grille.set(choose_file("Choisir une grille")))
+        label_wrong_grid = Label(self, textvariable=self.var_wrong_grille)
 
         # Affichage des widgets
         label_grille.grid(row=2, column=0, sticky=E)
@@ -94,28 +96,26 @@ class ChoixAlgo(Frame):
         label_wrong_grid.grid(row=2, column=3)
 
         # Affichage d'un message si le fichier est erroné
-        var_grille.trace("w", lambda name, index, mode, var_test=var_grille,
-                                     var_affichage=var_wrong_grille: affiche_wrong_file(var_test, var_affichage))
+        self.var_grille.trace("w", lambda name, index, mode, var_test=self.var_grille, var_affichage=self.var_wrong_grille: self.affiche_wrong_grid(var_test, var_affichage))
 
     def choice_algo(self):
         """
         Affichage des widgets liés au type d'algorithme
         """
-        # Définition des variables
-        var_ac3 = BooleanVar()
-        var_algo = IntVar()
-
         # Définition des boutons
         check_ac3 = Checkbutton(self, text="Lancer AC3 avant d'appliquer l'algorithme principal ?",
-                                variable=var_ac3, onvalue=True, offvalue=False)
+                                variable=self.var_ac3, onvalue=True, offvalue=False)
+        check_uniq = Checkbutton(self, text="Apparition unique d'un mot ?",
+                                 variable=self.var_uniq, onvalue=True, offvalue=False)
         label_algo = Label(self, text="Choisir l'algorithme à appliquer :", font=("", 16))
-        radio_rac = Radiobutton(self, text="Retour Arrière Chronologique", variable=var_algo, value=0)
-        radio_cbj = Radiobutton(self, text="Conflict Back Jumping", variable=var_algo, value=1)
+        radio_rac = Radiobutton(self, text="Retour Arrière Chronologique", variable=self.var_algo, value=0)
+        radio_cbj = Radiobutton(self, text="Conflict Back Jumping", variable=self.var_algo, value=1)
         radio_rac.select()
 
         # Affichage des widgets
         label_algo.grid(pady=10, columnspan=4)
         check_ac3.grid(sticky=W, columnspan=4)
+        check_uniq.grid(sticky=W, columnspan=4)
         radio_rac.grid(sticky=W, columnspan=4)
         radio_cbj.grid(sticky=W, columnspan=4)
 
@@ -123,21 +123,18 @@ class ChoixAlgo(Frame):
         """
         Affichage des widgets liés à l'heuristique utilisée pour choisir un mot dans les algorithmes
         """
-        # Définition des variables
-        var_heur = IntVar()
-
         # Définition des widgets
         label_heuristique = Label(self, text="Choisir l'heuristique :", font=("", 14))
         radio_next = Radiobutton(self, text="Premier de la liste des mots restants",
-                                 variable=var_heur, value=0)
+                                 variable=self.var_heur, value=0)
         radio_min_domain = Radiobutton(self, text="Plus petit domaine",
-                                       variable=var_heur, value=1)
+                                       variable=self.var_heur, value=1)
         radio_max_constraints = Radiobutton(self, text="Plus grand nombre de contraintes binaires",
-                                            variable=var_heur, value=2)
+                                            variable=self.var_heur, value=2)
         radio_domain_constraints = Radiobutton(self, text="Taille du domaine puis nombre de contraintes",
-                                               variable=var_heur, value=3)
+                                               variable=self.var_heur, value=3)
         radio_constaints_domain = Radiobutton(self, text="Nombre de contraintes puis taille du domaine",
-                                              variable=var_heur, value=4)
+                                              variable=self.var_heur, value=4)
         radio_domain_constraints.select()
 
         # Affichage des widgets
@@ -147,3 +144,81 @@ class ChoixAlgo(Frame):
         radio_max_constraints.grid(sticky=W, columnspan=4)
         radio_domain_constraints.grid(sticky=W, columnspan=4)
         radio_constaints_domain.grid(sticky=W, columnspan=4)
+
+    def launch_button(self):
+        """
+        Ajout du bouton qui lance l'algorithme
+        """
+        btn = Button(self, text="Lancer l'algorithme !", command=self.launch_algo)
+        btn.grid(columnspan=4)
+
+    def launch_algo(self):
+        if self.var_dico.get() == "" or self.var_wrong_dico.get() != "":
+            showerror("Erreur Dictionnaire", "Veuillez choisir un fichier de dictionnaire correct")
+            return
+        if self.var_grille.get() == "" or self.var_wrong_grille.get() != "":
+            showerror("Erreur Grille", "Veuillez choisir un fichier de grille correct")
+            return
+        if self.var_ac3:
+            ac3(self.parent.parent.grid)
+        if self.var_algo.get() == 0:
+            thread = Thread(None, backtrack, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
+                            {"uniq": self.var_uniq.get(), "stop": True, "mainwindow": self.parent.parent})
+            thread.start()
+            # backtrack(self.parent.parent.grid, heuristic[self.var_heur.get()], self.var_uniq.get(), True, self.parent.parent)
+
+    def affiche_wrong_dico(self, var_test, var_affichage):
+        """
+        Affiche un message s'il n'y a pas de fichier de chemin relatif voulu
+        :param var_test: chemin relatif du fichier
+        :param var_affichage: variable à changer pour l'affichage du message
+        :type var_test: StringVar
+        :type var_affichage: StringVar
+        """
+        if not isfile(var_test.get()):
+            var_affichage.set("Fichier Inexistant")
+        else:
+            var_affichage.set("")
+            thread = Thread(None, self.read_dico)
+            thread.start()
+
+    def read_dico(self):
+        """
+        Essaie de lire le dictionnaire en argument
+        """
+        try:
+            self.dico = read_dictionary(self.var_dico.get())
+        except IOError:
+            showerror("Erreur Dictionnaire", "Le fichier donné n'est pas un dictionnaire correct")
+            return
+        if self.parent.parent.grid:
+            self.parent.parent.grid.set_dictionary(self.dico)
+
+    def affiche_wrong_grid(self, var_test, var_affichage):
+        """
+        Affiche un message s'il n'y a pas de fichier de chemin relatif voulu
+        :param var_test: chemin relatif du fichier
+        :param var_affichage: variable à changer pour l'affichage du message
+        :type var_test: StringVar
+        :type var_affichage: StringVar
+        """
+        if not isfile(var_test.get()):
+            var_affichage.set("Fichier Inexistant")
+        else:
+            var_affichage.set("")
+            thread = Thread(None, self.read_grid)
+            thread.start()
+
+    def read_grid(self):
+        """
+        Essaie de lire le dictionnaire en argument
+        """
+        try:
+            grid = read_grid(self.var_grille.get())
+        except IOError:
+            showerror("Erreur Grille", "Le fichier donné n'est pas une grille correcte")
+            return
+        if self.dico:
+            grid.set_dictionary(self.dico)
+        self.parent.parent.grid = grid
+        self.parent.parent.display_grid()

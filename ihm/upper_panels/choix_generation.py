@@ -68,5 +68,6 @@ class ChoixGeneration(Frame):
         """
         grid = generate_random_grid(self.width_var.get(), self.height_var.get(), self.densite_var.get()/100.0)
         self.parent.parent.grid = Grid(grid)
-        self.parent.parent.loaded_grid()
+        self.parent.parent.display_grid()
+        self.parent.set_to_loaded_grid()
 

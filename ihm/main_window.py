@@ -48,13 +48,13 @@ class MainWindow(Frame):
         self.left_frame = frame
         self.pack_left_frame()
 
-    def loaded_grid(self):
+    def display_grid(self):
         """
         Affiche la grille en attribut dans le panneau gauche et les options correspondantes dans le panneau droit
         """
         if self.grid:
-            self.set_left_frame(CellGrid(self, self.grid.get_height(), self.grid.get_width(), 30, self.grid.grid))
-        self.right_frame.set_to_loaded_grid()
+            self.set_left_frame(CellGrid(self, self.grid))
+        # self.right_frame.set_to_loaded_grid()
 
 
 def launch():

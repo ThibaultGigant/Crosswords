@@ -27,7 +27,7 @@ class MenuPersistant(Frame):
         ouvrir un fichier, créer une grille, ou faire des statistiques
         Ce sera le menu principal...
         """
-        open_button = Button(self, text="Ouvrir une grille existante", command=self.parent.parent.loaded_grid)
+        open_button = Button(self, text="Ouvrir une grille existante", command=self.parent.set_to_loaded_grid)
         create_button = Button(self, text="Générer une grille", command=self.parent.choix_generer)
         stats_button = Button(self, text="Faire des statistiques")
         open_button.pack()
