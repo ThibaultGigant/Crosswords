@@ -289,6 +289,20 @@ class Word:
                 modif.append(word)
         return modif
 
+    def consistant(self):
+        """
+
+        :return:
+        """
+        modif = []
+        for word, index1, index2 in self.binary_constraints:
+            this_letters = self.domain.letters_at_index(index1)
+            other_letters = word.domain.letters_at_index(index2)
+            union_letters = this_letters.intersection(other_letters)
+            if not union_letters:
+                modif.append(word)
+        return modif
+
 
 class Tree:
     """
