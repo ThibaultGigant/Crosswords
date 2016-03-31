@@ -47,11 +47,13 @@ def CBJ(grid, heuristic_function, uniq=True):
         # print([w.id for w in conflit_local])
         if not conflit_local:
             conflit_fils = CBJ(grid, heuristic_function, uniq)
+            # print("conflit fils de " + str(xk.id) + " : " + str(conflit_fils))
 
             if xk in conflit_fils:
                 conflit_fils.remove(xk)
                 conflit.union(conflit_fils)
             else:
+                # print("No conflit local pour " + str(xk.id))
                 conflit = conflit_fils
                 break
         else:
@@ -61,6 +63,7 @@ def CBJ(grid, heuristic_function, uniq=True):
         xk.domain = domain
         grid.instanciated_words.remove(xk)
         grid.uninstanciated_words.insert(0, xk)
+    print("back from " + str(xk.id) + " avec conflit : " + str(conflit))
     return conflit
 
 if __name__ == '__main__':
@@ -72,9 +75,7 @@ if __name__ == '__main__':
     print("Temps de création de la grille: " + str(time()-t))
     t = time()
     ac3(grid1)
-    for w in grid1.words:
-        print(w.domain.list_words())
-    res = CBJ(grid1, heuristic_size_and_constraints, True)
+    res = CBJ(grid1, heuristic_next, True)
 
     print("Temps de calcul de l'algo : " + str(time()-t))
     print("Temps total : " + str(time()-t1))

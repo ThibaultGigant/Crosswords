@@ -73,8 +73,8 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
-        #if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
+        # if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
+        if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
             # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
             for w in modif:
