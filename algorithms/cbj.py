@@ -17,46 +17,50 @@ def CBJ(grid, heuristic_function, uniq=True):
     :param heuristic_function: fonction heuristique qui détermine quel mot sera instancié à chaque itération
     :type grid: Grid
     :return: Ensemble de variables "en conflit" s'il y en a
+    :rtype: set
     """
-    if not grid.uninstanciated_words:
-        return []
-
-    conflit = []
     print("Mots restants à instancier : " + str(len(grid.uninstanciated_words)))
+    if not grid.uninstanciated_words:
+        instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
+        instanciation.sort(key=lambda x: x[0])
+        print(instanciation)
+        return set([])
+
+    conflit = set([])
 
     xk = heuristic_function(grid.uninstanciated_words)  # Prochaine variable à instancier
     grid.uninstanciated_words.remove(xk)
     grid.instanciated_words.append(xk)
 
-    # domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}
     domain = deepcopy(xk.domain)
 
     words = xk.domain.list_words()
     for word in words:
         # print("Essai instanciation mot " + str(xk.id) + " en " + word)
         xk.domain = Tree(word)
-        conflit_local = xk.consistant()
+        conflit_local = set(xk.consistant(grid.instanciated_words))
 
         if uniq:
-            same_words = grid.is_word_already_in(word)
-            conflit_local += [w for w in same_words if (w != xk and w not in conflit_local)]
+            same_words = set(grid.is_word_already_in(word))
+            conflit_local.union(same_words)
 
+        # print([w.id for w in conflit_local])
         if not conflit_local:
             conflit_fils = CBJ(grid, heuristic_function, uniq)
-            if not conflit_fils:  # Si il n'y a pas de conflit local ni de conflit fils, on a trouvé une bonne instance
-                return []
 
             if xk in conflit_fils:
-                conflit += [w for w in conflit_fils if (w != xk and w not in conflit)]
+                conflit_fils.remove(xk)
+                conflit.union(conflit_fils)
             else:
                 conflit = conflit_fils
                 break
         else:
-            conflit += [w for w in conflit_local if w not in conflit]
+            conflit.union(conflit_local)
 
-    xk.domain = domain
-    grid.instanciated_words.remove(xk)
-    grid.uninstanciated_words.insert(0, xk)
+    if conflit:
+        xk.domain = domain
+        grid.instanciated_words.remove(xk)
+        grid.uninstanciated_words.insert(0, xk)
     return conflit
 
 if __name__ == '__main__':

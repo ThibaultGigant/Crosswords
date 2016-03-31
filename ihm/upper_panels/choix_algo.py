@@ -162,6 +162,9 @@ class ChoixAlgo(Frame):
         if self.var_grille.get() == "" or self.var_wrong_grille.get() != "":
             showerror("Erreur Grille", "Veuillez choisir un fichier de grille correct")
             return
+        if not self.dico:
+            showerror("Erreur Dictionnaire", "Veuillez attendre le chargement du dictionnaire")
+            return
         if self.var_ac3:
             ac3(self.parent.parent.grid)
         if self.var_algo.get() == 0:
@@ -183,6 +186,7 @@ class ChoixAlgo(Frame):
         :type var_test: StringVar
         :type var_affichage: StringVar
         """
+        self.dico = None
         if not isfile(var_test.get()):
             var_affichage.set("Fichier Inexistant")
         else:

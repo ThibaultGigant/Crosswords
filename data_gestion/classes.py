@@ -302,19 +302,20 @@ class Word:
                 modif.append(word)
         return modif
 
-    def consistant(self):
+    def consistant(self, instantiated):
         """
-        Regarde si une instanciation d'un mot est en conflit avec les mots avec lesquels il est
-        :return:
+        Regarde si une instanciation d'un mot est en conflit avec les mots avec lesquels il est en relation
+        :return: liste des mots en conflit
         """
-        modif = []
+        conflit = []
         for word, index1, index2 in self.binary_constraints:
-            this_letters = self.domain.letters_at_index(index1)
-            other_letters = word.domain.letters_at_index(index2)
-            union_letters = this_letters.intersection(other_letters)
-            if not union_letters:
-                modif.append(word)
-        return modif
+            if word in instantiated:
+                this_letters = self.domain.letters_at_index(index1)
+                other_letters = word.domain.letters_at_index(index2)
+                union_letters = this_letters.intersection(other_letters)
+                if not union_letters:
+                    conflit.append(word)
+        return conflit
 
 
 class Tree:

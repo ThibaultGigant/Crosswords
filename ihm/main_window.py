@@ -56,9 +56,18 @@ class MainWindow(Frame):
             self.set_left_frame(CellGrid(self, self.grid))
         # self.right_frame.set_to_loaded_grid()
 
+    def update_grid(self):
+        """
+        Met à jour la grille après d'éventuels changements
+        """
+        if self.grid and self.left_frame:
+            self.left_frame.grid.instanciated_words = self.grid.instanciated_words
+            self.left_frame.update_words()
+
 
 def launch():
     root = Tk()
+    root.title("Crosswords CSP")
     # root.resizable(width=False, height=False)
 
     main_window = MainWindow(root)

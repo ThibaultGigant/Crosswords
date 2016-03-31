@@ -61,7 +61,7 @@ class CellGrid(Canvas):
             for (ind, (y, x)) in enumerate(word.list_coordinates):
                 if (x, y) not in self.written:
                     self.written.append((x, y))
-                    self.create_text(x+1/2, y+1/2, text=mot[ind], fill="grey")
+                    self.create_text(x+1/2, y+1/2, text=mot[ind], fill="#777777")
 
 
 class Cell:

@@ -3,7 +3,7 @@
 import sys
 from os import getcwd
 from copy import deepcopy
-from time import time
+from time import time, sleep
 
 sys.path.append(getcwd())
 from data_gestion.classes import Grid, Word
@@ -62,19 +62,19 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
                     same_modif.append(w)
 
         if stop:
-            # input("Appuyez sur la touche ENTREE pour continuer...")
             if mainwindow:
                 mainwindow.grid = grid
                 mainwindow.display_grid()
-
+            sleep(0.1)
+            # input("Appuyez sur la touche ENTREE pour continuer...")
 
         # print("Après modification")
         # for w in domains.keys():
         #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        # if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
-        if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
+        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
+        #if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
             # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
             for w in modif:
