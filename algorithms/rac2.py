@@ -11,7 +11,7 @@ from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
 
 
-def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
+def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_call=True):
     """
     Backtracking avec forward checking
     :param grid: grille sur laquelle on lance l'algorithme
@@ -24,6 +24,11 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     """
     # On vérifie qu'il reste des mots à instancier, sinon on a trouvé une solution
     if not grid.uninstanciated_words:
+        # Affichage graphique
+        if mainwindow:
+            mainwindow.display_grid()
+            sleep(0.05)
+            mainwindow.display_done(True)
         return True
 
     xk = heuristic_function(grid.uninstanciated_words)  # Prochaine variable à instancier
@@ -34,6 +39,8 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     if words == [""]:
         grid.uninstanciated_words.insert(0, xk)
         grid.instanciated_words.remove(xk)
+        if first_call and mainwindow:
+            mainwindow.display_done(False)
         return False
 
     # On garde en mémoire les domaines qui pourraient être modifiés
@@ -58,14 +65,14 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(0.05)
         if stop:
-            sleep(0.001)
-            # input("Appuyez sur la touche ENTREE pour continuer...")
+            stop.wait()
+            stop.clear()
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
-            # if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
+        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop, mainwindow, first_call=False):
+            # if not backtrack(grid, heuristic_function, uniq, stop, mainwindow, first_call=False):
             # rétablissement des domaines
             for w in modif:
                 w.domain = deepcopy(domains[w])
@@ -77,6 +84,8 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     grid.uninstanciated_words.insert(0, xk)
     grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
+    if first_call and mainwindow:
+        mainwindow.display_done(False)
     return False
 
 

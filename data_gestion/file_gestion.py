@@ -78,6 +78,29 @@ def read_grid(file_name, dictionary=None):
     return Grid(grid, dictionary)
 
 
+def write_partially_solved_grid(file_name, grid):
+    """
+    Ecrit le contenu d'une grille partiellement remplie dans un fichier dont le chemin relatif ou absolu est donné
+    On écrira (en plus des cases noires et blanches), les cases où on est sûr de la lettre
+    :param file_name: chemin relatif ou absolu du fichier dans lequel écrire
+    :param grid: grille qu'on veut sauvegarder
+    :type file_name: str
+    :type grid: Grid
+    """
+    grille = grid.grid
+    for word in grid.instanciated_words:
+        w = word.domain.list_words()[0]
+        for i in range(word.length):
+            x, y = word.list_coordinates[i]
+            if grille[x][y] in ["0", "1"]:
+                grille[x][y] = w[i]
+    fp = open(file_name, "w")
+    fp.write(str(grid.get_width()) + " " + str(grid.get_height()) + "\n")
+    for ligne in grille:
+        fp.write(" ".join(ligne) + "\n")
+    fp.close()
+
+
 if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     print(dico)

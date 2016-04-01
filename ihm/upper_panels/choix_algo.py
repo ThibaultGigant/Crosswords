@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter.messagebox import showerror
 from ihm.statics import choose_file
 from os.path import isfile
-from threading import Thread
+from threading import Thread, Event
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
@@ -38,6 +38,8 @@ class ChoixAlgo(Frame):
         self.var_uniq = BooleanVar()
         self.var_algo = IntVar()
         self.var_heur = IntVar()
+        self.var_step_by_step = BooleanVar()
+        self.down_button = None
         self.dico = None
 
         self.choice_buttons()
@@ -152,31 +154,52 @@ class ChoixAlgo(Frame):
         """
         Ajout du bouton qui lance l'algorithme
         """
-        btn = Button(self, text="Lancer l'algorithme !", command=self.launch_algo)
-        btn.grid(columnspan=4)
+        check_step_by_step = Checkbutton(self, text="Affichage étape par étape avec attente de clic ?",
+                                         variable=self.var_step_by_step, onvalue=True, offvalue=False)
+        self.down_button = Button(self, text="Lancer l'algorithme !", command=self.launch_algo)
+        check_step_by_step.grid(columnspan=4, sticky=W)
+        self.down_button.grid(columnspan=4)
 
     def launch_algo(self):
+        """
+        Lancement de l'algorithme avec les valeurs souhaitées
+        """
+        # Vérification que tout est bien entré et chargé
         if self.var_dico.get() == "" or self.var_wrong_dico.get() != "":
             showerror("Erreur Dictionnaire", "Veuillez choisir un fichier de dictionnaire correct")
-            return
-        if self.var_grille.get() == "" or self.var_wrong_grille.get() != "":
-            showerror("Erreur Grille", "Veuillez choisir un fichier de grille correct")
             return
         if not self.dico:
             showerror("Erreur Dictionnaire", "Veuillez attendre le chargement du dictionnaire")
             return
+        if self.var_grille.get() == "" or self.var_wrong_grille.get() != "":
+            showerror("Erreur Grille", "Veuillez choisir un fichier de grille correct")
+            return
+        if not self.parent.grid:
+            showerror("Erreur Grille", "Veuillez attendre le chargement de la grille")
+            return
+
+        # Récupération des variables qui nous intéressent
         if self.var_ac3:
             ac3(self.parent.parent.grid)
+
+        if self.var_step_by_step.get():
+            # On crée l'événement à suivre si on veut faire du step by step
+            event = Event()
+            self.parent.parent.left_frame.set_button_next(event)
+        else:
+            event = None
+
+        # Création d'un thread pour les algorithmes à lancer
         if self.var_algo.get() == 0:
             thread = Thread(None, backtrack, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
-                            {"uniq": self.var_uniq.get(), "stop": True, "mainwindow": self.parent.parent})
-            # backtrack(self.parent.parent.grid, heuristic[self.var_heur.get()], self.var_uniq.get(), True, self.parent.parent)
+                            {"uniq": self.var_uniq.get(), "stop": event, "mainwindow": self.parent.parent})
         else:
             thread = Thread(None, CBJ, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
-                            {"uniq": self.var_uniq.get(), "stop": True, "mainwindow": self.parent.parent})
-
+                            {"uniq": self.var_uniq.get(), "stop": event, "mainwindow": self.parent.parent})
+        # Lancement du thread qui fera les calculs et l'affichage
+        thread.daemon = True
         thread.start()
-        self.parent.parent.display_grid()
+        self.parent.set_to_solving(event)
 
     def affiche_wrong_dico(self, var_test, var_affichage):
         """

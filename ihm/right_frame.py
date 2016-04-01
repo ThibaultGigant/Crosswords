@@ -12,6 +12,7 @@ sys.path.append(getcwd())
 from ihm.menu_persistant import MenuPersistant
 from ihm.upper_panels.choix_algo import ChoixAlgo
 from ihm.upper_panels.choix_generation import ChoixGeneration
+from ihm.upper_panels.solving import SolvingButtons
 # from ihm.main_window import MainWindow
 
 
@@ -60,4 +61,12 @@ class RightFrame(Frame):
         """
         self.clean_upper_panel()
         self.upper_panel = ChoixGeneration(self)
+        self.pack_upper_panel()
+
+    def set_to_solving(self, event):
+        """
+        Affiche dans le panneau de droite les widgets pendant la résolution d'une grille
+        """
+        self.clean_upper_panel()
+        self.upper_panel = SolvingButtons(self, event)
         self.pack_upper_panel()

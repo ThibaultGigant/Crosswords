@@ -10,7 +10,7 @@ from os import getcwd
 sys.path.append(getcwd())
 
 from data_gestion.classes import Grid
-from ihm.grille import CellGrid
+from ihm.left_frame.left_frame import LeftFrame
 from ihm.right_frame import RightFrame
 
 
@@ -22,7 +22,7 @@ class MainWindow(Frame):
         Frame.__init__(self, master)
         self.parent = master
         self.grid = grid  # type: Grid
-        self.left_frame = None
+        self.left_frame = None  # type: LeftFrame
         self.right_frame = RightFrame(self)
         self.pack_elements()
 
@@ -52,17 +52,20 @@ class MainWindow(Frame):
         """
         Affiche la grille en attribut dans le panneau gauche et les options correspondantes dans le panneau droit
         """
-        if self.grid:
-            self.set_left_frame(CellGrid(self, self.grid))
-        # self.right_frame.set_to_loaded_grid()
+        if self.grid and not self.left_frame:
+            self.set_left_frame(LeftFrame(self, self.grid))
+        elif self.grid and self.left_frame:
+            self.left_frame.change_grid(self.grid)
 
-    def update_grid(self):
+    def display_done(self, done):
         """
-        Met à jour la grille après d'éventuels changements
+        Affiche dans le panneau gauche le résultat de l'algorithme : solution trouvée ou pas
         """
-        if self.grid and self.left_frame:
-            self.left_frame.grid.instanciated_words = self.grid.instanciated_words
-            self.left_frame.update_words()
+        if self.left_frame:
+            if done:
+                self.left_frame.set_done_true()
+            else:
+                self.left_frame.set_done_false()
 
 
 def launch():
