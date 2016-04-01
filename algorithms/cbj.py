@@ -24,7 +24,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         if mainwindow:
             mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.4)
+            sleep(0.1)
         return set([])
 
     conflit = set([])
@@ -54,7 +54,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         if mainwindow:
             mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.4)
+            sleep(0.1)
         if stop:
             sleep(0.001)
             # input("Appuyez sur la touche ENTREE pour continuer...")
@@ -73,7 +73,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         # print("Mots instanciés : " + str([w.id for w in grid.instanciated_words]))
         # print("Conflits locaux : " + str([w.id for w in conflit_local]))
         if not conflit_local:
-            conflit_fils = CBJ(grid, heuristic_function, uniq)
+            conflit_fils = CBJ(grid, heuristic_function, uniq, stop, mainwindow)
             # print("conflit fils de " + str(xk.id) + " : " + str(conflit_fils))
 
             if xk in conflit_fils:

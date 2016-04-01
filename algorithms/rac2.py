@@ -58,14 +58,14 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.2)
+            sleep(0.1)
         if stop:
             sleep(0.001)
             # input("Appuyez sur la touche ENTREE pour continuer...")
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        # if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
-        if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
+        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
+            # if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
             # rétablissement des domaines
             for w in modif:
                 w.domain = deepcopy(domains[w])
