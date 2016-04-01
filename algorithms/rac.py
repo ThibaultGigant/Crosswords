@@ -2,12 +2,11 @@
 
 import sys
 from os import getcwd
-from copy import deepcopy
 from random import choice
 from time import time
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, Tree, Word
+from data_gestion.classes import deepcopy, Grid, Tree, Word
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 

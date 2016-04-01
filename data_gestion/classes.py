@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
-from os import getcwd
-sys.path.append(getcwd())
-from copy import deepcopy
-
 
 class Grid:
     """
@@ -500,6 +495,21 @@ class Tree:
         """
         return self.card == 0
         # return (not self.children) or list(self.children.keys()) == [""]
+
+
+def deepcopy(domain):
+    """
+    Copie entièrement un arbre en le recréant totalement
+    :param domain: domaine d'un mot
+    :type domain: Tree
+    :return: Nouveau domaine copié entièrement
+    :rtype: Tree
+    """
+    words = domain.list_words()
+    tree = Tree(words[0])
+    for word in words[1:]:
+        tree.add_word(word)
+    return tree
 
 
 def test_tree():

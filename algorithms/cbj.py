@@ -1,10 +1,9 @@
 import sys
 from os import getcwd
-from copy import deepcopy
 from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, Tree, Word
+from data_gestion.classes import Grid, deepcopy, Tree, Word
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
@@ -21,9 +20,11 @@ def CBJ(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     """
     # print("Mots restants à instancier : " + str(len(grid.uninstanciated_words)))
     if not grid.uninstanciated_words:
-        instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
-        instanciation.sort(key=lambda x: x[0])
-        # print(instanciation)
+        # Affichage graphique
+        if mainwindow:
+            mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.4)
         return set([])
 
     conflit = set([])
@@ -32,47 +33,78 @@ def CBJ(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     grid.uninstanciated_words.remove(xk)
     grid.instanciated_words.append(xk)
 
-    domain = deepcopy(xk.domain)
+    # domain = deepcopy(xk.domain)
+    # On garde en mémoire les domaines qui pourraient être modifiés
+    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}
+    domains[xk] = deepcopy(xk.domain)
 
     words = xk.domain.list_words()
+    # Si le domaine est vide, alors on s'est fait vider avant par un mot instancié
+    if words == [""]:
+        grid.instanciated_words.remove(xk)
+        grid.uninstanciated_words.insert(0, xk)
+        # print("back from " + str(xk.id) + " avec conflit : " + str([w.id for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
+        return set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words])
+
     for word in words:
         # print("Essai instanciation mot " + str(xk.id) + " en " + word)
         xk.domain = Tree(word)
 
+        # Affichage graphique
+        if mainwindow:
+            mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.4)
         if stop:
-            if mainwindow:
-                mainwindow.grid = grid
-                mainwindow.display_grid()
-            sleep(0.1)
+            sleep(0.001)
             # input("Appuyez sur la touche ENTREE pour continuer...")
 
-        conflit_local = set(xk.consistant(grid.instanciated_words))
+        # forward check avec récupèration des mots dont les domaines ont été modifiés
+        modif = xk.update_related_variables_domain()
+        conflit_local = set([w for w in modif if w in grid.instanciated_words])  # ne devrait jamais arriver à cause du FC
 
         if uniq:
-            same_words = set(grid.is_word_already_in(word))
-            same_words.remove(xk)
-            if same_words:
-                # print("On a trouvé des mots pareil : " + str([w.id for w in same_words]) + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                conflit_local = conflit_local.union(same_words)
-
-        # print([w.id for w in conflit_local])
+            same_size_words = [w for w in grid.uninstanciated_words if w.length == xk.length]
+            same_modif = []
+            for w in same_size_words:
+                if w.domain.remove_word(word) and w not in modif:
+                    same_modif.append(w)
+        # print("Mots modifiés : " + str([w.id for w in modif]))
+        # print("Mots instanciés : " + str([w.id for w in grid.instanciated_words]))
+        # print("Conflits locaux : " + str([w.id for w in conflit_local]))
         if not conflit_local:
             conflit_fils = CBJ(grid, heuristic_function, uniq)
             # print("conflit fils de " + str(xk.id) + " : " + str(conflit_fils))
 
             if xk in conflit_fils:
                 conflit_fils.remove(xk)
-                conflit = conflit.union(conflit_fils)
+                if conflit_fils:
+                    conflit = conflit.union(conflit_fils)
+                else:
+                    conflit = conflit.union(set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
             else:
                 # print("No conflit local pour " + str(xk.id) + " et il n'est pas dans " + str([w.id for w in conflit_local]))
                 conflit = conflit_fils
+                if conflit:
+                    # rétablissement des domaines
+                    for w in modif:
+                        w.domain = deepcopy(domains[w])
+                    if uniq:
+                        for w in same_modif:
+                            w.domain.add_word(word)
                 break
         else:
             # print("Ajout conflit entre mot " + str(xk.id) + " et " + str([w.id for w in conflit_local]))
             conflit = conflit.union(conflit_local)
+        # rétablissement des domaines
+        for w in modif:
+            w.domain = deepcopy(domains[w])
+        if uniq:
+            for w in same_modif:
+                w.domain.add_word(word)
 
     if conflit:
-        xk.domain = domain
+        xk.domain = deepcopy(domains[xk])
         grid.instanciated_words.remove(xk)
         grid.uninstanciated_words.insert(0, xk)
     # print("back from " + str(xk.id) + " avec conflit : " + str([w.id for w in conflit]))
@@ -87,11 +119,11 @@ if __name__ == '__main__':
     print("Temps de création de la grille: " + str(time()-t))
     t = time()
     ac3(grid1)
-    res = CBJ(grid1, heuristic_next, True)
+    res = CBJ(grid1, heuristic_size_and_constraints, True)
 
     print("Temps de calcul de l'algo : " + str(time()-t))
     print("Temps total : " + str(time()-t1))
-    print(res)
+    print([w.id for w in res])
     if not res:
         instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
         instanciation.sort(key=lambda x: x[0])

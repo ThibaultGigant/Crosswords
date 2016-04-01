@@ -2,11 +2,10 @@
 
 import sys
 from os import getcwd
-from copy import deepcopy
 from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid
+from data_gestion.classes import Grid, deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
@@ -57,7 +56,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
                     same_modif.append(w)
 
         if mainwindow:
-            mainwindow.grid = grid
+            # mainwindow.grid = grid
             mainwindow.display_grid()
             sleep(0.2)
         if stop:
