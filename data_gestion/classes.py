@@ -142,8 +142,10 @@ class Grid:
         """
         res = []
         for w in self.instanciated_words:
-            if w.domain.list_words() == [word]:
+            if w.domain.contains(word):
                 res.append(w)
+            # if w.domain.list_words() == [word]:
+            #     res.append(w)
         return res
 
     def __str__(self):
@@ -496,7 +498,8 @@ class Tree:
         Détermine si l'arbre est vide ou non
         :return: True si l'arbre est vide, False sinon
         """
-        return (not self.children) or list(self.children.keys()) == [""]
+        return self.card == 0
+        # return (not self.children) or list(self.children.keys()) == [""]
 
 
 def test_tree():

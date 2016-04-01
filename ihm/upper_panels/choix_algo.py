@@ -173,7 +173,7 @@ class ChoixAlgo(Frame):
             # backtrack(self.parent.parent.grid, heuristic[self.var_heur.get()], self.var_uniq.get(), True, self.parent.parent)
         else:
             thread = Thread(None, CBJ, None, (self.parent.parent.grid, heuristic[self.var_heur.get()]),
-                            {"uniq": self.var_uniq.get()})
+                            {"uniq": self.var_uniq.get(), "stop": True, "mainwindow": self.parent.parent})
 
         thread.start()
         self.parent.parent.display_grid()

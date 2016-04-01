@@ -6,7 +6,7 @@ from copy import deepcopy
 from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, Word
+from data_gestion.classes import Grid
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
@@ -23,8 +23,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     :return: Ensemble de solutions réalisables
     :rtype: bool
     """
-    # On vérifie qu'il reste des mots à instancier
-    # print("Nombre de mots non-instanciés : " + str(len(grid.uninstanciated_words)))
+    # On vérifie qu'il reste des mots à instancier, sinon on a trouvé une solution
     if not grid.uninstanciated_words:
         return True
 
@@ -43,13 +42,9 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
     domains[xk] = deepcopy(xk.domain)
 
     for word in words:
-        # print("Instanciation de " + str(xk.id) + " à " + word)
         xk.domain = Tree(word)  # Affectation de word à la variable
 
         # forward check avec récupèration des mots dont les domaines ont été modifiés
-        # print("Avant modification")
-        # for w in domains.keys():
-        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
         modif = xk.update_related_variables_domain()
 
         # Si on veut qu'il y ait qu'une fois un mot dans une grille,
@@ -61,21 +56,17 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
                 if w.domain.remove_word(word) and w not in modif:
                     same_modif.append(w)
 
+        if mainwindow:
+            mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.2)
         if stop:
-            if mainwindow:
-                mainwindow.grid = grid
-                mainwindow.display_grid()
-            sleep(0.1)
+            sleep(0.001)
             # input("Appuyez sur la touche ENTREE pour continuer...")
-
-        # print("Après modification")
-        # for w in domains.keys():
-        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
         # if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop):
         if not backtrack(grid, heuristic_function, uniq, stop, mainwindow):
-            # print("Rétablissement des domaines à partir du mot " + str(xk.id))
             # rétablissement des domaines
             for w in modif:
                 w.domain = deepcopy(domains[w])
@@ -84,7 +75,6 @@ def backtrack(grid, heuristic_function, uniq=True, stop=False, mainwindow=None):
                     w.domain.add_word(word)
         else:
             return True
-    # print("Retour arrière depuis " + str(xk.id))
     grid.uninstanciated_words.insert(0, xk)
     grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
