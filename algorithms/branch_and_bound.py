@@ -40,9 +40,9 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
                 if any([w.domain.cardinality() == 0 for w in modif]):
                     consistant = False
 
+                    variable.domain = deepcopy(domains[variable])
                     for w in modif:
                         w.domain = deepcopy(domains[w])
-                    variable.domain = deepcopy(domains[variable])
 
                 # Calcule des bornes inf et sup
                 inf, sup = bounds(new_grid_words, node, word, dico_values)
@@ -51,7 +51,7 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
                 (new_node, new_sup) = (copy(node[0])+[word], sup)
                 nodes += [(new_node, new_sup)]
 
-                # Verifier consistance
+                # Si consistant, on branche
                 if consistant:
                     # Si on est à une feuille de l'arbre et la valeur trouvée est > à la valeur de la meilleure solution trouvée, retenir nouvelle solution
                     if (len(new_node) == nvar) and inf > best[1]:
@@ -60,7 +60,6 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
                     # Si borne supérieur > à la valeur de la meilleure solution trouvée, explorer noeud
                     if sup > best[1]:
                         nodes, best = bnb(nvar, new_grid_words, dico_values, nodes, (new_node, new_sup), best, uniq)
-
     return nodes, best
 
 def bounds(grid_words, node, word, dico_values):
@@ -73,12 +72,13 @@ def bounds(grid_words, node, word, dico_values):
         sup += max([float(dico_values[word]) for word in variable_domain])
     return inf, sup
 
-def total_nodes(n):
-    t_nodes = 0
-    for i in range(n):
-        t_nodes += 2**(i+1)
-    return t_nodes
-
+#def fill_grid(grid, solution):
+#    i=0
+#    for variable in grid.grid_to_words():
+#        variable.domain = Tree(solution[i])
+#        print (variable.domain.list_words())
+#        i += 1
+#    return grid
 
 def test_instance():
     t1 = time()
@@ -93,11 +93,14 @@ def test_instance():
     grid.set_dictionary(dico)
     print("Temps de création de la grille: " + str(time() - t3))
     t = time()
-    n = len(grid.grid_to_words())
-    a, best = bnb(n, grid.grid_to_words(), dico_values, uniq=True)
+    n = len(grid.words)
+    a, best = bnb(n, grid.words, dico_values, uniq=True)
     print("Temps d'exploration de l'arbre: " + str(time() - t))
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")
+    grid.fill_grid(best[0])
+    #for variable in grid.words:
+    #    print(variable.domain.list_words())
 
 
 def test_frequence():

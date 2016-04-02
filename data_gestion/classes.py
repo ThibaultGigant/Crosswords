@@ -143,6 +143,12 @@ class Grid:
             #     res.append(w)
         return res
 
+    def fill_grid(self, solution):
+        i = 0
+        for w in self.words:
+            w.domain = Tree(solution[i])
+            i += 1
+
     def __str__(self):
         """
         Affichage de la grille
