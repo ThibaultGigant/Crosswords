@@ -1,0 +1,317 @@
+Logique et Représentation des Connaissances
+
+Cette UE, partagée entre les spécialités ANDROIDE et DAC, présente les notions de base de représentation des connaissances, en particulier les langages basés sur la logique ou les langages graphiques. Nous verrons que la nature des connaissances représentées peut amener à favoriser des outils différents.
+Nous nous arrêterons dans la première partie sur la représentation sémantique des connaissances, et en particulier sur les notions d'ontologie et de web sémantique. Dans la deuxième partie du cours, nous aborderons la représentation des informations temporelles, ainsi que des croyances et des connaissances d'autres agents, et de leur dynamique.
+
+
+Modélisation, Optimisation, Graphes, et Programmation Linéaire
+
+Cette UE est destinée à introduire les graphes et la programmation linéaire comme outils de modélisation et de résolution de problèmes d'optimisation ou de décision. Elle a pour objet l'étude de modèles et l'analyse d'algorithmes fondamentaux de l'optimisation combinatoire. Elle constitue une base nécessaire à tout étudiant en informatique souhaitant acquérir une bonne maîtrise des modèles et algorithmes pour la résolution de problèmes d'optimisation, qu'il s'agisse de problèmes réels rencontrés dans un contexte industriel, ou de problèmes de recherche académique. Les étudiants auront aussi l'occasion de mettre en pratique les modèles étudiés en utilisant un solveur de programmes linéaires. Dans la partie concernant les graphes, on s'intéressera à la modélisation et la résolution de problèmes de chemins optimaux, d'arbres couvrants, de flots, d'affectation, de transports, à des méthodes générales de résolution de problèmes d'optimisation telles que la programmation dynamique et le branch and bound. Dans la partie concernant la programmation linaire, on apprend à formaliser des problèmes d'optimisation comme des programmes linéaires, puis à les résoudre par l'algorithme du Simplexe et quelques variantes. On aborde ensuite la dualité en programmation linéaire et l'analyse post-optimale et l'optimisation linéaire en nombre entiers. Les travaux dirigés sont l'occasion de s'exercer à la modélisation de problèmes standard par les graphes et la programmation linéaire pour en permettre une résolution efficace par la machine. Un projet vient compléter la formation en donnant aux étudiants l'occasion de mettre en pratique ces notions sur des problèmes types en utilisant un solveur de programme linéaire ou en développant des algorithmes de graphes.
+
+
+Résolution de problèmes
+
+Cette UE couvre les principales méthodes de résolution de problèmes difficiles en Intelligence Artificielle et en Recherche Opérationnelle. Le cours abordera ainsi les algorithmes de résolution exacte, mais également les algorithmes approchés (recherche heuristique dans les espaces d'états, les méthodes de recherche locale, les méta-heuristiques, etc.), et notamment ceux avec garantie de performance. Les étudiants auront aussi l'occasion de mettre en pratique les méthodes algorithmiques étudiées en développant et en comparant certains algorithmes de résolution pour des problèmes concrets.
+On abordera la résolution de problèmes dans les graphes d'états et en particulier l'algorithme A*. On abordera ensuite la résolution de problèmes de satisfaction de contraintes, puis la résolution de problèmes par méta-heuristiques (méthodes évolutionniste, recherche locale...). Ces méthodes de résolution seront illustrées en travaux dirigées et appliquées à la résolution de problèmes divers tels que la planification d'itinéraires, la résolution de jeux ou de puzzles, …
+On abordera également les algorithmes gloutons, les algorithmes basés sur la méthode du primal-dual, la méthode de l’arrondi, la randomisation, le recherche locale etc… Ces techniques algorithmiques seront illustrées en travaux dirigés et appliquées à la résolution de problèmes tels que les problèmes de flots, de « clustering », de localisation de services, d’ordonnancement, les réseaux de Hopfield, ...
+
+
+Fondements des Systèmes Multiagents
+
+Après avoir introduit la notion d' « agent » en tant qu'entité autonome interagissant avec son environnement, nous présenterons les différents aspects des systèmes multi-agents. Nous décrirons les différents modèles d'agents (réactifs, cognitifs, rationnels,...) et montrerons comment des systèmes d'agents peuvent être utilisés pour résoudre des problèmes de manière collective. Les problématiques d'autonomie, de distribution et d'asynchronisme seront ensuite mises en avant afin d'apprendre à concevoir et modéliser des systèmes multi-agents. Nous introduirons les architectures des agents et des systèmes multi-agents les plus communément utilisées. Les questions liées aux interactions entre agents et à leur coordination seront plus particulièrement développées (protocoles d'interaction, langages de communication). Enfin, nous étudierons la modélisation des systèmes multi-agents et leur mise en oeuvre via des langages de programmation orientéé agent.
+Cet enseignement s'accompagnera d'une mise en pratique des connaissances acquises dans le cadre d'un projet de développement d'un système multi-agent.
+
+Plan du cours
+Introduction aux agents et aux SMA (autonomie, environnement, ...)
+Modèles d’agents : réactif, cognitifs, rationnels,
+Architecture d’agents et SMA : des architectures réactives aux architectures cognitives et hybrides
+Résolution collective :
+Distribution
+Asynchronisme
+Interaction
+Coordination
+Interactions entre agents
+Protocoles d’interaction
+Langages de communication : de la théorie des actes du langage aux protocoles FIPA
+Modélisation et validation des protocoles
+Programmation orientée agents
+Langages d’agents et plateformes
+Problème de la gestion du temps et de la distribution
+Programmation orientée-agent
+Agents mobiles pour des applications multi-machines et multi-plateformes
+CLAIM ou S-CLAIM
+
+
+Interaction Homme-Machine
+
+Cette UE présente les méthodes et techniques permettant la conception et la réalisation d'interfaces homme-machine conviviales et performantes. L'enseignement porte à la fois sur les aspects logiciels (illustrés à l'aide des boîtes à outils Qt et Android) et les facteurs humains (conception centrée utilisateur, prototypage, évaluation, ergonomie ...). Il comprend également une initiation aux nouvelles techniques d'interaction (interaction gestuelle, multitouch, interfaces tangibles, mobiles ...) et à la visualisation des données.
+
+
+Décision et Jeux
+
+Cette unité d'enseignement offre un panorama des modèles de comportement décisionnel, individuel et collectif de la RO et de l'IA et fournit les outils d'analyse en permettant un examen critique. La théorie de la décision et la théorie des jeux permettent de formaliser et d'expliquer les comportements observés. Les principes de rationalité dégagés par ces théories servent de base au développement d'agents décisionnels et de systèmes d'aide à la décision. Tous les résultats sont présentés de manière précise dans un cadre formel et sont illustrés par de nombreux exemples issus de situations décisionnelles concrètes (procédures de vote, choix risqués, jeux de stratégie, conflit et négociation).
+Plan du cours
+Partie I : Théorie de la décision et applications
+1. Préférences, typologie des structures ordonnées
+2. Problème de décision individuelle
+3. Décision dans l'incertain, utilité espérée
+4. Décision séquentielle, arbre de décision
+5. Décision multicritère
+6. Algorithmes pour la décision multicritère
+7. Utilité additivement séparable
+8. Elicitation de préférences
+Partie II : Théorie des Jeux et applications
+9. Typologie des jeux et concepts de base
+10. Jeux non-coopératifs
+11. Jeux répétés, évolutionnaires, coopératifs
+
+
+Coordination et Consensus Multiagents: Modèles, Algorithmes, Protocoles
+
+Dans cette UE, nous étudions les systèmes multi-agents (SMA) cognitifs comme paradigme de conception et de mise en œuvre de systèmes intelligents, autonomes et complexes. Plus spécifiquement, nous y approfondissons deux aspects : la Coordination et le Consensus Multi-agents. L’U.E. CoCoMa est organisée comme suit :
+Cours 1 : Introduction aux agents autonomes et aux systèmes multi-agents cognitifs.
+- Définition d’agents autonomes
+- Modèles d’agents : un continuum allant des agents réactifs aux agents cognitifs.
+- Fondements des SMA cognitifs
+- les principes d’autonomie, de coopération, et d’interaction ;
+- les architectures d’agents (ex ; architecture BDI) ;
+- les protocoles d’interaction multi-agents ;
+- les modèles d’environnements des SMA.
+- Illustration : étude d’un système multi-agent pour la modélisation d’une flottille de drones en mission de protection d’un convoi humanitaire.
+Cours 2 : Coordination multi-agents : problématique et approches
+- Présentation de la problématique de la coordination multi-agent
+- Classification des modèles de planification
+- Principales approches de coordination multi-agents: résolution distribuée de problèmes, planification multi-agent, formation de coalition, négociation, protocoles de coopérations, etc.
+Cours 3 : Coordination par planification hiérarchique / récursive multi-agent (1)
+- De la planification mono-agent à la planification multi-agent.
+- Un modèle hiérarchique pour la planification multi-agents (HTN)
+- Un modèle récursif pour la planification multi-agents (RdPR)
+Cours 4 : Coordination par planification temporelle multi-agents (2)
+- Coordination multi-robots par insertion incrémentale de plans  (IxTet);
+- Modèle temporel à base d’automates hybrides pour la coordination (ex. SCALA pour la coordination de missions aériennes) ;
+- Modèle temporel basé sur le planificateur SAPA (Coordinated SAPA)
+Cours 5  : Implémentabilité des modèles de coordination 
+- Problématiques de l’implémentabilité des SMA vus comme des applications distribuées où des agents s’exécutent simultanément (ex. problèmes de synchronisation, concurrence d’accès, fiabilité, etc.) ; il propose également des solutions pour appréhender ces problématiques.
+Cours 6 et 7: Planification et coordination multi-agent sous incertitude
+- Modèles markoviens pour le cas coopératif
+- Problèmes de complexité, algorithmes exacts et approchés
+Cours 8 : Résolution en-ligne et apprentissage
+- Cadre non-coopératif et jeux bayésiens
+Cours 9 : Optimisation de Contraintes Distribuées
+- Modèles DCOP
+- Approche ADOPT et autres
+Cours 10 : Allocation de ressources
+- algorithmes centralisés versus approches multiagents.
+- Propriétés: optimalité, résistance au comportement stratégique des agents, complexité de communication.
+- Allocation par enchères (appariement, enchères combinatoires).
+- Partage équitable: définition, algorithmes, protocoles (picking séquences).
+Cours 11 : Négociation bilatérale
+- axiomatique de la négociation,
+- protocole de négociation monotone (MCP) et stratégie de Zeuthen,
+- protocole des offres alternées
+Cours 12 : Négociation multilatérale
+- protocoles avec médiateurs,
+- extensions de MCP,
+- négociation basées sur le Contract-Net,
+- négociation sur les réseaux
+Cours 13 : Consensus
+- définitions, propriétés.
+- modèle de l'équilibre structurel.
+- modèles de réputation.
+Cours 14: Argumentation
+- définitions, notions de consensus argumentatif.
+- protocoles de persuasion,
+- stratégies argumentatives. 
+
+
+Modèles et Applications en Ordonnancement et optimisation combinAtoire
+
+Cette UE présente les méthodes avancées et les applications
+industrielles récentes en Optimisation Combinatoire et en Ordonnancement.
+Elle s'intéresse à la résolution exacte des problèmes d'optimisation
+combinatoire NP-difficiles (voyageur de commerce, tournées de véhicules,
+coloration de graphes,...). Elle s'appuie sur la programmation linéaire
+en nombres entiers et en particulier sur les formulations contenant un
+nombre exponentiel de variables et de contraintes. Ces formulations sont
+résolues par différentes méthodes comme les méthodes de coupes ou les
+méthodes de décomposition (relaxation lagrangienne, génération de
+colonnes). Des outils théoriques comme les approches polyédrales sont
+également introduits dans le but de comprendre comment l'on peut obtenir
+la solution exacte d'un problème d'optimisation combinatoire de grande
+dimension et comment sont conçus les solveurs d'optimisation commerciaux.
+Cette UE introduit également les problématiques de l'ordonnancement
+(tâches, modes d'exécution, contraintes et critères d'optimisation). La
+complexité et la résolution exacte et approchée des problèmes les plus
+représentatifs sont abordées. Les problèmes fondamentaux classiques
+ainsi que les modèles nouveaux et non-standards seront présentés. Des
+exemples applicatifs ainsi que des études de cas dans les systèmes
+manufacturiers et informatiques seront développés.
+Un projet sera proposé pour appréhender la pratique de la recherche opérationnelle
+en partant d'une application industrielle jusqu'à sa résolution pratique.
+
+
+Environnements Virtuels Interactifs et Jeux Vidéos
+
+Cette UE vise à présenter les principes, technologies et principaux axes de recherches dans le domaine de la conception d'environnements virtuels interactifs, qui incluent la réalité virtuelle et le jeu vidéo.
+Objectifs du cours 
+Acquisition des bases de la réalité virtuelle comme les éléments du monde virtuel, le rendu, l’interaction, les interfaces immersives et sensorielles, la perception en environnement immersif. Savoir définir et mener une expérimentation pour valider des hypothèses sur l’interaction en milieu complexe. Apprendre à concevoir des environnements où sont produites des activités de communication, collaboration, délibération, décision, coopération au sein de collectifs hétérogènes.
+Interaction dans des environnements complexes, modélisation du monde et de l’activité humaine. Système immersif avec interactions naturelles versus systèmes non-immersifs. Principes d’analyse de productions textuelles. Interaction en langue naturelle avec le système. Interaction dialogique avec des personnages non-joueurs. Scénarisation et récit interactifs, objectifs scénaristiques dynamiques, explicabilité, causalité.
+Comprendre les enjeux de l’intégration des résultats de recherche des sciences cognitives pour les modèles informatiques (environnements virtuels, robotique,…)
+Etude des principes de la conception de jeux vidéo et du positionnement de l’Intelligence Artificielle dans ce cadre. Passage en revue des technologies à l’œuvre pour le contrôle de l’adversaire et des Personnages Non-Joueurs, et autres applications de l’IA dans le jeu (mise en scène, contrôle dynamique de la difficulté,…) en partant des techniques les plus utilisées dans l’industrie pour aller vers celles qui font actuellement l’objet de recherches dans les laboratoires ou sont testées dans des jeux innovants. Introduction aux nouvelles pistes de recherches pour les jeux futurs.
+Plan du cours
+Objectifs de l’IA dans le jeu Vidéo, introduction au Game Design
+IA dans l’industrie du jeu vidéo : du scripting à la programmation de comportements complexes (1/2)
+IA dans l’industrie du jeu vidéo : du scripting à la programmation de comportements complexes (1/2)
+IA avancée dans le jeu vidéo : agents autonomes
+IA avancée dans le jeu vidéo : agents adaptatifs
+Directions de recherche : nouveaux rôles pour l’IA dans le jeu vidéo
+Environnements virtuel informés (perception, décision et adaptation)
+Interaction naturelle et interfaces gestuelles
+Environnements virtuels pour l’apprentissage (serious games et récit interactif)
+Scénarisation et adaptation dynamique d’environnements virtuels
+Interaction avec des personnages virtuels autonomes
+Evaluation d’un système interactif (couplage action/perception)
+Introduction aux méthodes de traitement automatique de la langue naturelle
+Analyse de la langue naturelle pour interface langagière avec le jeu, dialogue avec des personnages virtuels
+
+Evaluation
+Etude de cas Jeu Vidéo (30%)
+Mini-projet réalité virtuelle (30%): conception et réalisation d’un environnement interactif ou expérimentation en environnement interactif (Unity 3D) 30%, rapport 20%, soutenance 20%
+Examen final 40%
+
+
+Modèles et Algorithmes pour la Décision dans l'Incertain
+
+Cette UE traite des différents modèles et algorithmes pour l'aide à la décision et la prise automatique de décision en contexte incertain. Dans un premier temps, elle se focalise sur les modèles décisionnels classiques, statiques ou séquentiels. Pour une utilisation pratique de ces modèles et particulièrement pour absorber la complexité d'un passage à l'échelle, le cours s'attache ensuite à présenter les modèles compacts de représentation dans un premier temps probabiliste, puis pour les préférences. La dernière partie du cours à pour but d'introduire des alternatives à ces modèles classiques.
+Plan du cours
+Partie I : Modèles classiques
+décision “statique” : modèle EU, aversion au risque, RDU
+décision “dynamique” (1/3) : les arbres de décision
+décision “dynamique” (2/3) : les PDM
+Partie II : Modèles graphiques probabilistes
+représentation compacte des probas : réseaux bayésiens, réseaux de Markov, notions d’indépendance, graphoïdes, etc
+inférence exacte dans les RB (triangulations / arbres de jonction)
+inférence approchée dans les RB (méthodes de Monte Carlo, échantillonnage)
+paramétrisation des modèles : apprentissage de réseaux bayésiens
+Partie III : Modèle graphique pour les préférences
+modèles graphiques pour les préférences : CP-nets, CP-trees
+paramétrisation des modèles : élicitations de préférences, réseaux GAI, UCP-nets
+Partie IV : modèles alternatifs
+représentation alternatives des incertitudes (1/2) : fonctions de croyance, capacités, choquet et BEU, aversion à l’ambiguïté
+représentation alternatives des incertitudes (2/2) : possibilités, utilités qualitatives, arbres de décision possibilistes
+Séances de TP / mini projets (3 par an) parmi (suivant l'année) :
+PFac- Factorisations pour les décisions séquentielles: PDM factorisés
+PMod- Modélisation par BN
+PApp- Apprentissage dans les BNs
+PEli- Élicitation de préférences
+
+
+Modélisation et Simulation Multiagents
+
+Nous montrerons comment les systèmes multiagents peuvent être utilisés pour modéliser et simuler des systèmes complexes à l'aide de nombreux agents intelligents en interaction dans des environnements riches et dynamiques (par exemple, simulation de phénomènes économiques, simulation de villes ou de réseau).
+On présentera notamment les bases méthodologiques, ainsi que les principales problématiques technologiques (architecture d'agents, apprentissage) pertinentes pour la modélisation et la simulation multiagents. De nombreux cas d'application, ainsi qu'une grande place faite à la mise en pratique sur machine, illustreront le cours dans des domaines variés: simulation pour les sciences économiques et sociales, simulation de villes, réseaux, etc.
+
+Plan du cours
+Introduction aux systèmes complexes et à la simulation multiagents (cours)
+Modèles simples et leurs applications, étude de cas en SHS et économie (cours)
+Mise en pratique des modèles étudiés en cours (TME)
+Méthodologie pour la simulation multiagent (cours + TME)
+Projet (I): fin du travail sur la validation, étude et simulation d'un article (TME)
+Projet (II): suite de l'étude et simulation d'un article (TME)
+Architectures d'agents réactifs et cognitifs pour la simulation
+Architectures d'agents hybrides pour la simulation
+Architectures d'agents affectifs pour la simulation
+Agents adaptatifs et apprenants pour la simulation
+Simulation multi-niveaux, passage à l'échelle
+Etude de cas: Terra Dynamica
+Simulation multiagents de réseaux: réseaux sociaux (cours + TME)
+Simulation multiagents de réseaux: réseaux de production, réseaux informatiques (cours + TME)
+
+
+Modèles et Algorithmes pour la Décision Multicritères et Collective
+
+L'objectif de cette UE est de fournir aux étudiants des outils permettant d'aborder les problèmes de décision collective ou d'optimisation multi-objectifs (chaque objectif pouvant représenter un point de vue différent du problème : agent, scénario, critère). La première partie du cours porte sur la décision collective. Après avoir dressé un panorama des difficultés que l'on peut rencontrer dans les problèmes de décision collective, on présente les principaux résultats théoriques sur l'agrégation des préférences, et on aborde les aspects computationnels en choix social. La deuxième partie du cours porte sur la décision multicritère. On présente les principaux résultats théoriques sur l'agrégation des préférences pour la décision multicritère, ainsi que les principaux modèles décisionnels présents dans la littérature : règles de dominance (dominance de Pareto, dominance de Lorenz, etc.) et fonctions d'agrégation (distance de Tchebycheff au point idéal, moyennes ordonnées pondérées, intégrales de Choquet, etc.). On s'intéresse ensuite aux aspects computationnels liés à la mise en oeuvre de ces différents modèles dans un contexte opérationnel, en particulier lorsque l'espace des possibles est de nature combinatoire. La complexité des problèmes ainsi identifiés sera analysée, et de multiples algorithmes de résolution exacte ou approchée seront proposés.
+
+Plan du cours
+Programme prévisionnel
+15/09 : Introduction à la décision multicritère et collective
+22/09 : Algorithmes exacts et approchés pour l'optimisation
+multi-objectifs I
+29/09 : Algorithmes exacts et approchés pour l'optimisation
+multi-objectifs II
+06/10 : Métaheuristiques pour l'optimisation multi-objectifs I
+13/10 : Métaheuristiques pour l'optimisation multi-objectifs II
+20/10 : Exploration interactive de la frontière de Pareto I
+27/10 : Exploration interactive de la frontière de Pareto II
+02/11 - 13/11 : Examen réparti 1
+17/11 : Décision multicritère dans les espaces d'états
+24/11 : Optimisation équitable
+01/12 : Optimisation robuste
+08/12 : Décision multicritère et agrégation ordinale
+15/12 : Procédures de vote et analyse axiomatique
+21/12 - 01/01 : Vacances de Noël
+05/01 : Choix social computationnel
+12/01 : Soutenance de mini-projet
+25/01 - 29/01 : Examen réparti 2
+
+
+Algorithmique pour l'Optimisation et la Théorie des Jeux
+
+Les approches algorithmiques classiques en optimisation font généralement des hypothèses fortes sur le système étudié: problème clairement défini, fonction objectif précise, données parfaitement connues,... Or, ces hypothèses sont dans de nombreux cas pratiques irréalistes. Par exemple, lors d'applications en ligne il est fréquent que les données soient susceptibles d'évoluer au cours du temps. Aussi, plusieurs personnes sont souvent partie prenante dans le système étudié, ce qui rend l'objectif et la dynamique même du système plus complexes.
+Dans cette UE, nous présenterons des modèles, concepts et méthodes récemment développés pour prendre en compte les trois aspects majeurs suivants:
+- le fait que le problème concerne plusieurs agents aux intérêts potentiellement contradictoires, modélisé dans le cadre de la théorie des jeux algorithmique;
+- le fait que les ressources de calcul sont nécessairement limités, avec de nouvelles approches pour la résolution de problèmes NP-difficiles;
+- le fait que le système comporte des aspects dynamiques, avec des données susceptibles d'évoluer ou connues au fur et à mesure.
+Première partie: théorie des jeux algorithmique
+Dans cette première partie, nous présenterons les principaux modèles et approches utilisés pour la modélisation de systèmes composés d'un ensemble d'agents indépendants et égoïstes. Cette problématique est au coeur de la théorie des jeux algorithmique, discipline née il y a une dizaine d'années suite à l'essor d'internet. Les notions abordées seront en particulier illustrées sur des problèmes liés aux systèmes informatiques et aux réseaux.
+Notions clés: équilibres de Nash, prix de l'anarchie, enchères, marchés, mécanismes d'incitation, jeux coopératifs
+Deuxième partie: Résolution de problèmes difficiles
+Dans la deuxième partie de cette UE, nous nous focaliserons sur le développement de méthodes exactes ou approchées avec garantie de performance pour la résolution de problèmes NP-difficiles.
+Notions clés: complexité paramétrée, algorithmes approchés
+Troisième partie: Algorithmique dans un environnement dynamique
+Nous nous intéresserons dans cette dernière partie à différents modèles visant à prendre en compte l'aspect intrinsèquement dynamique de certains problèmes. Notions clés: algorithmique en-ligne, analyse de compétitivité, réoptimisation
+
+
+Ingénierie des Serious Games
+
+Cette UE a pour objet de présenter des modèles, des méthodes et des outils pour la construction de serious games. Dans la partie théorique, nous présenterons les catégories de serious games, les problématiques de conception (learning et game design), de vérification et de suivi du joueur. Des aspects liés à l'ingénierie des connaissances des serious games seront également abordés. Dans la partie pratique, nous travaillerons sur des éditeurs et des frameworks de développement de serious games. Les étudiants auront à concevoir et réaliser des prototypes de serious games. Au-delà de l'aspect formateur, ces projets collectifs ont pour objectif de sensibiliser les étudiants aux différentes problématiques liées à la construction de serious games.
+Plan du cours 
+1. Différentes acceptions des serious games
+2. Problématiques de conception des serious games
+3. Framework conceptuels pour les serious games
+4. Etudes de cas sur les serious games
+5. Outils auteur pour les enseignants
+6. Test et vérification de scénarios de serious games
+7. Suivi des joueurs dans les serious games
+8. Serious game: un système à base de connaissances
+9. Modèles et techniques d’ingénierie des connaissances
+
+
+IA pour la robotique
+
+Cette UE présente les méthodes et algorithmes développés pour doter des systèmes robotiques d'une autonomie décisionnelle. On abordera diverses approches, en partant des approches classiques d'ingéniérie jusqu'aux approches bio-inspirées. Les notions abordées concernent la navigation, la localisation et la cartographie, le contrôle moteur, la sélection de l'action, la décision séquentielle dans l'incertain ainsi que l'apprentissage de concepts, de modèles ou de comportements pour un robot ou un groupe de robots autonomes. L'UE s'étend sur 14 séances), qui sont complétés par des travaux pratiques en salle machine. Le contenu est le suivant:
+ 
+Cours sur les bases de la robotique:
+Introduction à la robotique
+Architectures de contrôle dîtes cognitives
+Estimation d'état, localisation, localisation et cartographie (SLAM)
+Modèles en robotique, commande et planification
+Cours sur les méthodes adaptatives:
+Apprentissage supervisé (imitation)
+Apprentissage renforcement (discret et continu)
+Robotique évolutionniste
+Robotique collective, modèles pour la biologie
+Neuroscience computationnelle : décision
+Neuroscience computationnelle : navigation
+Robotique développementale
+PROJETS
+Informations importantes:
+Vous devez envoyer le code le mercredi avant la soutenance (merci de commencer le sujet de votre mail par [IAR]
+La soutenance aura lieu lors de la dernière séance (15 janvier 2016), 8h30-12h30 + 13h30-16h30 (présentation+questions: 16+4 minutes par binome, 8+2 minutes si seul ; suivi de 5 min. de question de cours par personne)
+Lors de la soutenance: vous devez *absolument* respecter le temps imparti!
+Le but du projet est de ré-implémenter tout ou partie du travail décrit dans un article. Il sera évalué lors de la dernière séance, par une note de présentation (10 min. par personne) et par des réponses à des questions portant sur le cours. Le projet doit être fait en groupe de deux personnes (les groupes doivent être différents des groupes de TPs.
+Pour chaque sujet, un enseignant référent est indiqué et il vous est demandé de le contacter dès le début de votre projet. Son rôle est de vous conseiller en début de projet. Il peut, éventuellement, répondre à 1 ou 2 questions pendant le projet, mais ce n’est pas un encadrant.
+Les sujets doivent être réalisés par binôme. Dès que votre choix est fait, envoyez moi un mail (nicolas.bredeche (at) upmc.fr).
+Les sujet ne seront attribués qu’une seule fois, priorité étant donnée aux premiers ayant effectué la demande. Objectif du projet: vous êtes invité à les reproduire en simulation.
+(les projets seront affichés fin octobre)
+

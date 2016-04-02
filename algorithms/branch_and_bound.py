@@ -6,6 +6,7 @@ from time import time
 sys.path.append(getcwd())
 from data_gestion.classes import Grid, Tree, Word, deepcopy
 from data_gestion.file_gestion import *
+from algorithms.arc_consistency import ac3
 
 def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0)):
     """
@@ -47,19 +48,19 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0)):
             # Ajouter noeud à l'arbre de recherche
             (new_node, new_sup) = (copy(node[0])+[word], sup)
             nodes += [(new_node, new_sup)]
-            print (new_node)
+            print(new_node)
 
             # Verifier consistance
             # Si non consistant, rétablire domaine
 
             if consistant:
                 # Si la valeur trouvée à une feuille > à la valeur de la meilleure solution trouvée, retenir nouvelle solution
-                if (len(new_node) == n) and inf > best[1]:
+                if (len(new_node) == nvar) and inf > best[1]:
                     best = (new_node, inf)
 
                 # Si borne supérieur > à la valeur de la meilleure solution trouvée, explorer noeud
                 if sup > best[1]:
-                    nodes, best = bnb(n, new_grid_words, dico_values, nodes, (new_node, new_sup), best)
+                    nodes, best = bnb(nvar, new_grid_words, dico_values, nodes, (new_node, new_sup), best)
             else:
                 variable.domain = deepcopy(domains[variable])
 
@@ -82,21 +83,62 @@ def total_nodes(n):
         t_nodes += 2**(i+1)
     return t_nodes
 
-if __name__ == '__main__':
+
+def test_instance():
     t1 = time()
     dico = read_dictionary(sys.argv[1])
-    print("Temps de création du dictionnaire : " + str(time()-t1))
+    print("Temps de création du dictionnaire : " + str(time() - t1))
     t2 = time()
     dico_values = read_values(sys.argv[1])
-    #print (dico_values)
-    print("Temps de création du dictionnaire valué: " + str(time()-t2))
+    # print (dico_values)
+    print("Temps de création du dictionnaire valué: " + str(time() - t2))
     t3 = time()
     grid = read_grid(sys.argv[2])
     grid.set_dictionary(dico)
-    print("Temps de création de la grille: " + str(time()-t3))
+    print("Temps de création de la grille: " + str(time() - t3))
     t = time()
     n = len(grid.grid_to_words())
     a, best = bnb(n, grid.grid_to_words(), dico_values)
-    print("Temps d'exploration de l'arbre: " + str(time()-t))
+    print("Temps d'exploration de l'arbre: " + str(time() - t))
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")
+
+
+def test_frequence():
+    t1 = time()
+    dico, dico_values = read_text_frequency(sys.argv[1])
+    print("Temps de création des dictionnaires : " + str(time() - t1))
+    t3 = time()
+    grid = read_grid(sys.argv[2])
+    grid.set_dictionary(dico)
+    print("Temps de création de la grille: " + str(time() - t3))
+    t = time()
+    n = len(grid.grid_to_words())
+    print(n, len(dico_values))
+    a, best = bnb(n, grid.grid_to_words(), dico_values)
+    print("Temps d'exploration de l'arbre: " + str(time() - t))
+    print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
+    print("On explore " + str(len(a)) + " noeuds.")
+
+
+def test_mots_androide():
+    t1 = time()
+    dico, dico_values = read_valued_dictionary(sys.argv[1])
+    print("Temps de création des dictionnaires : " + str(time() - t1))
+    t3 = time()
+    grid = read_grid(sys.argv[2], dico)
+    ac3(grid)
+    print("Temps de création de la grille: " + str(time() - t3))
+    t = time()
+    n = len(grid.grid_to_words())
+    print(n, len(dico_values))
+    a, best = bnb(n, grid.grid_to_words(), dico_values)
+    print("Temps d'exploration de l'arbre: " + str(time() - t))
+    print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
+    print("On explore " + str(len(a)) + " noeuds.")
+
+
+if __name__ == '__main__':
+    # test_instance()
+    # test_frequence()
+    test_mots_androide()

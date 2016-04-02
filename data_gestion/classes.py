@@ -180,7 +180,10 @@ class Word:
         Word.word_id += 1
         self.horizontal = horizontal
         if dictionary:
-            self.domain = deepcopy(dictionary[length])  # type: Tree
+            if length in dictionary:
+                self.domain = deepcopy(dictionary[length])  # type: Tree
+            else:
+                raise IOError("Le dictionnaire ne comporte pas les éléments nécessaires au remplissage de la grille")
         else:
             self.domain = None
         # liste de tuples de contraintes binaires : (word, indices of common letter) :
