@@ -70,7 +70,7 @@ Morgan \textsc{Chopin}
 
 Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), forward checking ($FC$), conflict back-jumping ($CBJ$). La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
 
-Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. Chaque mot du dictionnaire sera muni d'un poids positif ou nul $\in \left[0,1\right]$ et on d\'{e}veloppera un algorithme de type Branch and Bound qui permette de rechercher la solution optimale qui serait la solution de poids maximal dans la grille.
+Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. Chaque mot du dictionnaire sera muni d'un poids positif ou nul appartenant à $\left[0,1\right]$ et on d\'{e}veloppera un algorithme de type Branch and Bound qui permette de rechercher la solution optimale qui serait la solution de poids maximal dans la grille.
 
 \section{Mod\'{e}lisation par un CSP et r\'{e}solution}
 
@@ -78,33 +78,37 @@ Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. 
 
 Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}me de satisfaction de contraintes en associant une variable \`{a} chaque mot de la grille. Supposons qu'il y ait $m$ mots dans la grille. \bigskip
 
-\textbf{Variables :} ~ $x_{i}~,~\forall i \in \{1,...,m\}$
+\begin{description}
+	\item[Variables :] ~ $x_{i}~,~\forall i \in \{1,...,m\}$
+	
+	\bigskip
+	
+	\item[Domaines :] Soit $dict$ un dictionnaire de mots admissibles:
+	
+	\begin{align*}
+	D(x_{i}) = \{ X \in dict \}
+	\end{align*}
+	
+	\bigskip
+	
+	\item[Contraintes :]\hspace{0.1cm}\\
+	\begin{itemize}
+		\item Soit $l_{i}$ la taille du mot en $i$:
+		
+		\begin{equation} 
+		len(x_{i}) = l_{i}
+		\end{equation}
+		\item Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
+		\begin{equation} 
+		x_{i}[q] = x_{j}[p]
+		\end{equation}
+		\item Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
+		\begin{equation} 
+		\textit{AllDiff}~(x_{1},x_{2},...x_{m})
+		\end{equation}
+	\end{itemize}
+\end{description}
 
-\bigskip
-
-\textbf{Domaines :} Soit $dict$ un dictionnaire de mots admissibles:
-
-\begin{align*}
-D(x_{i}) = \{ X \in dict \}
-\end{align*}
-
-\bigskip
-
-\textbf{Contraintes :} Soit $l_{i}$ la taille du mot en $i$:
-
-\begin{equation} 
-len(x_{i}) = l_{i}
-\end{equation}
-\par
-Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
-\begin{equation} 
-x_{i}[q] = x_{j}[p]
-\end{equation}
-\par
-Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
-\begin{equation} 
-\textit{AllDiff}~(x_{1},x_{2},...x_{m})
-\end{equation}
 
 \subsection{Exp\'{e}rimentation}
 

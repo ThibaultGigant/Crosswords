@@ -8,7 +8,7 @@ from copy import deepcopy
 from pickle import dump, load
 
 sys.path.append(getcwd())
-from data_gestion.file_gestion import read_dictionary, read_grid
+from data_gestion.file_gestion import read_dictionary, read_grid, write_partially_solved_grid
 from algorithms.arc_consistency import ac3
 from algorithms.rac2 import backtrack
 from algorithms.cbj import CBJ
@@ -51,11 +51,13 @@ def calcul_temps_algos(grid):
             for heuristic in heuristics:
                 for uniq in [False, True]:
                     temp_grid = deepcopy(grid)
+                    nb_iterations = 1 if heuristic == heuristic_next else 10
                     t = time()
-                    if launch_ac3:
-                        ac3(temp_grid)
-                    algo(temp_grid, heuristic, uniq=uniq)
-                    temps_ac3.append(time()-t)
+                    for _ in range(nb_iterations):
+                        if launch_ac3:
+                            ac3(temp_grid)
+                        algo(temp_grid, heuristic, uniq=uniq)
+                    temps_ac3.append((time()-t)/nb_iterations)
         temps.append(temps_ac3)
     return temps
 
@@ -97,8 +99,10 @@ def benchmark_to_file(dossier_grilles, dossier_dicos, output_file):
     :param dossier_dicos: dossier contenant tous les dictionnaires
     :param output_file: fichier où écrire tous les résultats
     """
+    t = time()
     # Récupération du dictionnaire
     dico = benchmark_algos(dossier_grilles, dossier_dicos)
+    print("Les benchmarks ont pris : " + str(time()-t) + " secondes")
 
     # Ecriture en binaire dans le fichier grâce à pickle
     fp = open(dirname(output_file) + "pickle_" + basename(output_file), "wb")
