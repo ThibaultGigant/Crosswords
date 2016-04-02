@@ -5,6 +5,7 @@
 \contentsline {subsection}{\numberline {1.2}Exp\'{e}rimentation}{1}
 \contentsline {section}{\numberline {2}Extension au cas pond\'{e}r\'{e}}{3}
 \contentsline {subsection}{\numberline {2.1}Mod\'{e}lisation}{3}
-\contentsline {subsection}{\numberline {2.2}Exp\'{e}rimentation}{3}
-\contentsline {subsection}{\numberline {2.3}Bonus}{3}
-\contentsline {section}{Conclusion}{4}
+\contentsline {subsection}{\numberline {2.2}Exp\'{e}rimentation}{4}
+\contentsline {subsection}{\numberline {2.3}Exp\'{e}rimentation}{5}
+\contentsline {subsection}{\numberline {2.4}Bonus}{5}
+\contentsline {section}{Conclusion}{6}

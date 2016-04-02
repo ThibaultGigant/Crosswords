@@ -152,7 +152,38 @@ Taille = 100 & t2 & \%  \\
 
 \subsection{Mod\'{e}lisation}
 
-Petite intro. \bigskip
+Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids positif ou nul $\in \left[0,1\right]$ repr\'{e}sentant l'importance qu'un utilisateur attache \`{a} ce mot. Pour trouver la solution optimale du probl\`{e}me, c-\`{a}-d la solution de poids maximum dans la grille, il faut utiliser une m\'{e}thode exacte, comme le \og Branch \& Bound \fg{} qui sera repr\'{e}sent\'{e} par un arbre de recherche binaire.
+
+Chaque sous-probl\`{e}me cr\'{e}\'{e} au cours de l'exploration est d\'{e}sign\'{e} par un n\oe{}ud qui repr\'{e}sente les mots choisis pour chaque variable $x_{i}$ de la grille. Les branches de l'arbre symbolisent le processus de s\'{e}paration, elles repr\'{e}sentent la relation entre les n\oe{}uds (ajout du mot $m_{i} \in D(x_{i}$). Cette m\'{e}thode arborescente nous permettra donc d'\'{e}num\'{e}rer toutes les solutions possibles.
+
+En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou non \`{a} une solution admissible et on retient la meilleure solution obtenue, qui dans ce cas, sera la solution v\'{e}rifiant toutes de poids maximum.\\
+
+Pour am\'{e}liorer la complexit\'{e} du \og Branch \& Bound \fg, seules les solutions qui v\'{e}rifient les contraintes de consistances potentiellement de bonne qualit\'{e} seront \'{e}num\'{e}r\'{e}es, les solutions ne pouvant pas conduire \`{a} am\'{e}liorer la solution courante ne sont pas explor\'{e}es. \\
+
+Le \og Branch \& Bound \fg{} est bas\'{e} sur trois principes :
+
+\subsubsection*{Principe de s\'{e}paration}
+
+Le principe de s\'{e}paration consiste \`{a} diviser le probl\`{e}me en un certain nombre de sous-probl\`{e}mes qui ont chacun leur ensemble de solutions r\'{e}alisables. En r\'{e}solvant tous les sous-probl\`{e}mes et en prenant la meilleure solution trouv\'{e}e, on est assur\'{e} d'avoir r\'{e}solu le probl\`{e}me initial. Ce principe de s\'{e}paration est appliqu\'{e} de mani\`{e}re r\'{e}cursive \`{a} chacun des sous-ensembles tant que celui-ci contient plusieurs solutions. \\
+Remarque : La proc\'{e}dure de s\'{e}paration d'un ensemble s'arr\^{e}te lorsqu'une des conditions
+suivantes est v\'{e}rifi\'{e}e : \\
+-- on sait que l'ensemble ne contient aucune solution admissible (cas o\`{u} les mots ne v\'{e}rifient pas les conditions de consistance) ; \\
+-- on conna\^{i}t une solution meilleure que toutes celles de l'ensemble ;
+
+\subsubsection*{Principe d'\'{e}valuation}
+
+Le principe d'\'{e}valuation a pour objectif de conna\^{i}tre la qualit\'{e} des n\oe{}uds \`{a} traiter. La m\'{e}thode de \og Branch and Bound \fg{} utilise deux types de bornes : une borne inf\'{e}rieure de la fonction d'utilit\'{e} du probl\`{e}me initial et une borne sup\'{e}rieure de la fonction d'utilit\'{e}. La connaissance d'une borne inf\'{e}rieure du probl\`{e}me et d'une borne sup\'{e}rieure de la fonction d'utilit\'{e} de chaque sous-probl\`{e}me permet d'arr\^{e}ter  l'exploration d'un sous-ensemble de
+solutions qui ne sont pas candidats \`{a} l'optimalit\'{e}.\\
+-- borne sup\'{e}rieure:\\
+-- borne inf\'{e}rieure:
+
+\subsubsection*{Parcours de l'arbre}
+
+Le type de parcours de l'arbre permet de choisir le prochain n\oe{}ud \`{a} s\'{e}parer parmi l'ensemble des n\oe{}uds de l'arborescence. L'exploration en profondeur privil\'{e}gie les sous-probl\`{e}mes obtenus par le plus grand nombre de s\'{e}parations appliqu\'{e}es au probl\`{e}me de d\'{e}part, c'est-\`{a}-dire aux sommets les plus \'{e}loign\'{e}s de la racine (= de profondeur la plus \'{e}lev\'{e}e). L'obtention rapide d'une solution admissible en est l'avantage.
+
+\subsection{Exp\'{e}rimentation}
+
+\newpage
 
 \textbf{Variables :} ~ $x_{i}~,~\forall i \in \{1,...,m\}$
 
