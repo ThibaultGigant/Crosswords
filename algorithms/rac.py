@@ -2,67 +2,92 @@
 
 import sys
 from os import getcwd
-from random import choice
-from time import time
+from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import deepcopy, Grid, Tree, Word
+from data_gestion.classes import Grid, deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
+from algorithms.heuristics import *
 
 
-def backtrack(V, heuristic_function, uniq=True):
+def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_call=True):
     """
     Backtracking avec forward checking
-    :param V: Ensemble de variables non instanciées
+    :param grid: grille sur laquelle on lance l'algorithme
     :param heuristic_function: fonction heuristique qui détermine quel mot sera instancié à chaque itération
     :param uniq: True si un mot ne peut apparaître qu'une fois dans la grille, False sinon
-    :type V: list[Word]
+    :param stop: threading.Event qui permet d'arrêter le processus à chaque itération
+    :param mainwindow: Fenêtre principale, permettant d'accéder au panneau gauche et afficher la grille
+    :param first_call: True si c'est l'appel de départ ou non, sert surtout à renvoyer un affichage particulier si on trouve une solution ou non
+    :type grid: Grid
     :type uniq: bool
     :return: Ensemble de solutions réalisables
     :rtype: bool
     """
-    # V = grid.words # Ensemble des variables à instancier
-    if not V:
+    # On vérifie qu'il reste des mots à instancier, sinon on a trouvé une solution
+    if not grid.uninstanciated_words:
+        # Affichage graphique
+        if mainwindow:
+            mainwindow.display_grid()
+            sleep(0.1)
+            mainwindow.display_done(True)
         return True
 
-    xk = heuristic_function(V)  # Prochaine variable à instancier
-    V.remove(xk)
+    # Pour le stepbystep c'est plus "pratique"
+    if first_call:
+        # Affichage si demandé
+        if mainwindow:
+            # mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.1)
+        if stop:
+            stop.wait()
+            stop.clear()
+
+    xk = heuristic_function(grid.uninstanciated_words)  # Prochaine variable à instancier
+    grid.uninstanciated_words.remove(xk)
+    grid.instanciated_words.append(xk)
     words = xk.domain.list_words()
     # print("Tentative d'instanciation du mot " + str(xk.id) + " parmi les mots : " + str(words))
     if words == [""]:
+        grid.uninstanciated_words.insert(0, xk)
+        grid.instanciated_words.remove(xk)
+        if first_call and mainwindow:
+            mainwindow.display_done(False)
         return False
+
     # On garde en mémoire les domaines qui pourraient être modifiés
-    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}  # type: dict[Word, Tree]
+    domains = {word: deepcopy(word.domain) for word, ind1, ind2 in xk.binary_constraints}
     domains[xk] = deepcopy(xk.domain)
 
     for word in words:
-        # print("Instanciation de " + str(xk.id) + " à " + word)
         xk.domain = Tree(word)  # Affectation de word à la variable
 
         # forward check avec récupèration des mots dont les domaines ont été modifiés
-        # print("Avant modification")
-        # for w in domains.keys():
-        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
         modif = xk.update_related_variables_domain()
 
         # Si on veut qu'il y ait qu'une fois un mot dans une grille,
         # il faut le retirer du domaine des autres mots de même taille
         if uniq:
-            same_size_words = [w for w in V if w.length == xk.length]
+            same_size_words = [w for w in grid.uninstanciated_words if w.length == xk.length]
             same_modif = []
             for w in same_size_words:
                 if w.domain.remove_word(word) and w not in modif:
                     same_modif.append(w)
 
-        # print("Après modification")
-        # for w in domains.keys():
-        #     print(str(w.id) + " : " + str(w.domain.list_words()) + str(w.domain.cardinality()))
+        # Affichage si demandé
+        if mainwindow:
+            # mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.1)
+        if stop:
+            stop.wait()
+            stop.clear()
 
         # Appel récursif, on vérifie que l'instanciation courante donne une solution stable
-        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(V[:], heuristic_function, uniq):
-            # if not backtrack(V[:], heuristic_function, uniq):
-            # print("Rétablissement des domaines à partir du mot " + str(xk.id))
+        if any([w.domain.cardinality() == 0 for w in modif]) or not backtrack(grid, heuristic_function, uniq, stop, mainwindow, first_call=False):
+            # if not backtrack(grid, heuristic_function, uniq, stop, mainwindow, first_call=False):
             # rétablissement des domaines
             for w in modif:
                 w.domain = deepcopy(domains[w])
@@ -71,77 +96,12 @@ def backtrack(V, heuristic_function, uniq=True):
                     w.domain.add_word(word)
         else:
             return True
-    # print("Retour arrière depuis " + str(xk.id))
+    grid.uninstanciated_words.insert(0, xk)
+    grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
+    if first_call and mainwindow:
+        mainwindow.display_done(False)
     return False
-
-
-def heuristic_next(words):
-    """
-    Retourne la première variable parmi celles qui ne sont pas encore instanciée
-    :param domain: liste de mots
-    """
-    return words[0]
-
-
-def heuristic_max_constraints(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    nb_constraints = [len(i.binary_constraints) for i in words]
-    max_constraints = max(nb_constraints)
-    indices = [i for i, j in enumerate(nb_constraints) if j == max_constraints]
-    return words[choice(indices)]
-
-
-def heuristic_min_domain(words):
-    """
-    Retourne le mot qui a le plus petit domaine
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    domains_size = [word.domain.cardinality() for word in words]
-    min_domain = min(domains_size)
-    indices = [i for i, j in enumerate(domains_size) if j == min_domain]
-    return words[choice(indices)]
-
-
-def heuristic_constraints_and_size(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires,
-    en cas d'égalité celui d'entre eux qui a le plus petit domaine,
-    en cas d'égalité on en choisit un au hasard
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    nb_constraints = [len(i.binary_constraints) for i in words]
-    max_constraints = max(nb_constraints)
-    indices = [i for i, j in enumerate(nb_constraints) if j == max_constraints]
-    if len(indices) > 1:
-        return heuristic_min_domain([words[i] for i in indices])
-    return words[choice(indices)]
-
-
-def heuristic_size_and_constraints(words):
-    """
-    Retourne le mot qui a le plus de contraintes binaires,
-    en cas d'égalité celui d'entre eux qui a le plus petit domaine,
-    en cas d'égalité on en choisit un au hasard
-    :param words: liste de mots
-    :type words: list[Word]
-    :rtype: Word
-    """
-    domains_size = [word.domain.cardinality() for word in words]
-    min_domain = min(domains_size)
-    indices = [i for i, j in enumerate(domains_size) if j == min_domain]
-    if len(indices) > 1:
-        return heuristic_max_constraints([words[i] for i in indices])
-    return words[choice(indices)]
 
 
 if __name__ == '__main__':
@@ -149,19 +109,22 @@ if __name__ == '__main__':
     dico = read_dictionary(sys.argv[1])
     print("Temps de création du dictionnaire : " + str(time()-t1))
     t = time()
-    grid = read_grid(sys.argv[2], dico)
+    grid1 = read_grid(sys.argv[2])
+    grid1.set_dictionary(dico)
     print("Temps de création de la grille: " + str(time()-t))
     t = time()
-    ac3(grid)
-    V = grid.words
-    # print(V)
-    # res = backtrack(V[:], heuristic_max_constraints)
-    # res = backtrack(V[:], heuristic_constraints_and_size, False)
-    # res = backtrack(V[:], heuristic_next, True)
-    # res = backtrack(V[:], heuristic_min_domain, False)
-    res = backtrack(V[:], heuristic_size_and_constraints, True)
+    ac3(grid1)
+
+    # res = backtrack(grid1, heuristic_max_constraints)
+    # res = backtrack(grid1, heuristic_constraints_and_size, False)
+    # res = backtrack(grid1, heuristics_max_constraints_with_instanciated, True)
+    # res = backtrack(grid1, heuristic_min_domain, False)
+    res = backtrack(grid1, heuristic_size_and_constraints, True)
+
     print("Temps de calcul de l'algo : " + str(time()-t))
     print("Temps total : " + str(time()-t1))
     print(res)
     if res:
-        print([(w.id, w.domain.list_words()) for w in V])
+        instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
+        instanciation.sort(key=lambda x: x[0])
+        print(instanciation)

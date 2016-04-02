@@ -10,7 +10,7 @@ from pickle import dump, load
 sys.path.append(getcwd())
 from data_gestion.file_gestion import read_dictionary, read_grid, write_partially_solved_grid
 from algorithms.arc_consistency import ac3
-from algorithms.rac2 import backtrack
+from algorithms.rac import backtrack
 from algorithms.cbj import CBJ
 from algorithms.heuristics import *
 
@@ -33,6 +33,18 @@ ordre_temps = """Ordre d'affichage des temps :
 - backtrack avec heuristic_size_and_constraints avec obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristics_max_constraints_with_instanciated sans obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristics_max_constraints_with_instanciated avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_next sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_next avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_min_domain sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_min_domain avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_max_constraints sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_max_constraints avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_constraints_and_size sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_constraints_and_size avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_size_and_constraints sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristic_size_and_constraints avec obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristics_max_constraints_with_instanciated sans obligation que chaque mot soit unique dans la grille
+- CBJ avec heuristics_max_constraints_with_instanciated avec obligation que chaque mot soit unique dans la grille
 
 """
 

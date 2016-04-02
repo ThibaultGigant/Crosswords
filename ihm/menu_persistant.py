@@ -29,7 +29,7 @@ class MenuPersistant(Frame):
         """
         open_button = Button(self, text="Ouvrir une grille existante", command=self.parent.set_to_loaded_grid)
         create_button = Button(self, text="Générer une grille", command=self.parent.choix_generer)
-        stats_button = Button(self, text="Faire des statistiques")
+        stats_button = Button(self, text="Exécuter Branch & Bound", command=self.parent.choix_bnb)
         open_button.pack()
         create_button.pack()
         stats_button.pack()

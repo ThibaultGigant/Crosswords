@@ -144,6 +144,11 @@ class Grid:
         return res
 
     def fill_grid(self, solution):
+        """
+        Fixe les domaines des mots de la grille avec la solution trouvée (depuis Branch & Bound par exemple)
+        :param solution: Mots correspondant à une solution de la grille
+        :type solution: list[str]
+        """
         i = 0
         for w in self.words:
             w.domain = Tree(solution[i])

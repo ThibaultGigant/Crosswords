@@ -13,7 +13,7 @@ from ihm.menu_persistant import MenuPersistant
 from ihm.upper_panels.choix_algo import ChoixAlgo
 from ihm.upper_panels.choix_generation import ChoixGeneration
 from ihm.upper_panels.solving import SolvingButtons
-# from ihm.main_window import MainWindow
+from ihm.upper_panels.choix_bnb import ChoixBnB
 
 
 class RightFrame(Frame):
@@ -63,6 +63,14 @@ class RightFrame(Frame):
         self.upper_panel = ChoixGeneration(self)
         self.pack_upper_panel()
 
+    def choix_bnb(self):
+        """
+        Affiche dans le panneau supérieur les options pour le Branch & Bound
+        """
+        self.clean_upper_panel()
+        self.upper_panel = ChoixBnB(self)
+        self.pack_upper_panel()
+
     def set_to_solving(self, event):
         """
         Affiche dans le panneau de droite les widgets pendant la résolution d'une grille
@@ -70,3 +78,27 @@ class RightFrame(Frame):
         self.clean_upper_panel()
         self.upper_panel = SolvingButtons(self, event)
         self.pack_upper_panel()
+
+    def set_to_solving_bnb(self):
+        """
+        Affiche dans le panneau de droite une demande d'attente de la part de l'utilisateur pendant l'exécution du B&B
+        """
+        self.clean_upper_panel()
+        self.upper_panel = Frame(self)
+        label = Label(self.upper_panel, text="Veuillez patienter, le calcul de la solution s'effectue)")
+        label.pack()
+        self.pack_upper_panel()
+
+    def set_to_solved_bnb(self, solved):
+        """
+        Affiche dans le panneau de droite si un résultat a été trouvé lors de l'exécution du B&B
+        """
+        self.clean_upper_panel()
+        self.upper_panel = Frame(self)
+        if solved:
+            label = Label(self.upper_panel, text="Solution Trouvée !")
+        else:
+            label = Label(self.upper_panel, text="Aucune solution trouvée :-(")
+        label.pack()
+        self.pack_upper_panel()
+

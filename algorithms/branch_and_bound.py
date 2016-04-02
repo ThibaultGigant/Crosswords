@@ -4,9 +4,10 @@ from copy import copy
 from time import time
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, Tree, Word, deepcopy
+from data_gestion.classes import deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
+
 
 def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uniq=True):
     """
@@ -22,7 +23,9 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
         new_grid_words = copy(grid_words)
         new_grid_words.remove(variable)
         variable_domain = copy(variable.domain.list_words())
-        variable_domain.sort(key=lambda x: dico_values[x], reverse = True)
+        if "" in variable_domain:
+            variable_domain.remove("")
+        variable_domain.sort(key=lambda x: dico_values[x], reverse=True)
 
         # On garde en mémoire les domaines
         domains = {word: deepcopy(word.domain) for word, ind1, ind2 in variable.binary_constraints}
@@ -48,7 +51,7 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
                 inf, sup = bounds(new_grid_words, node, word, dico_values)
 
                 # Ajouter noeud à l'arbre de recherche
-                (new_node, new_sup) = (copy(node[0])+[word], sup)
+                (new_node, new_sup) = (copy(node[0]) + [word], sup)
                 nodes += [(new_node, new_sup)]
 
                 # Si consistant, on branche
@@ -62,6 +65,7 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uni
                         nodes, best = bnb(nvar, new_grid_words, dico_values, nodes, (new_node, new_sup), best, uniq)
     return nodes, best
 
+
 def bounds(grid_words, node, word, dico_values):
     inf = float(dico_values[word])
     for a_word in node[0]:
@@ -72,13 +76,24 @@ def bounds(grid_words, node, word, dico_values):
         sup += max([float(dico_values[word]) for word in variable_domain])
     return inf, sup
 
-#def fill_grid(grid, solution):
-#    i=0
-#    for variable in grid.grid_to_words():
-#        variable.domain = Tree(solution[i])
-#        print (variable.domain.list_words())
-#        i += 1
-#    return grid
+
+def launch_bnb(grid, dico, uniq=True, mainwindow=None):
+    """
+    Lance l'algorithme de B&B pour trouver la meilleure solution valuée
+    :param grid: Grille sur laquelle est appliqué l'algorithme
+    :param dico: dictionnaire comportant les mots et leur valuation
+    :param uniq: True si un mot ne peut apparaître qu'une fois dans la grille, False sinon
+    :param mainwindow: widget de la fenêtre principale, sert principalement à l'affichage à la fin de la recherche
+    """
+    a, best = bnb(len(grid.words), grid.words, dico, uniq=uniq)
+    if best[0]:
+        grid.fill_grid(best[0])
+    mainwindow.display_grid()
+    if not best[0]:
+        mainwindow.right_frame.set_to_solved_bnb(False)
+    else:
+        mainwindow.right_frame.set_to_solved_bnb(True)
+
 
 def test_instance():
     t1 = time()
@@ -99,7 +114,7 @@ def test_instance():
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")
     grid.fill_grid(best[0])
-    #for variable in grid.words:
+    # for variable in grid.words:
     #    print(variable.domain.list_words())
 
 
@@ -138,6 +153,6 @@ def test_mots_androide():
 
 
 if __name__ == '__main__':
-    test_instance()
+    # test_instance()
     # test_frequence()
-    #test_mots_androide()
+    test_mots_androide()

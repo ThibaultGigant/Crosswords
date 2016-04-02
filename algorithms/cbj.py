@@ -3,17 +3,22 @@ from os import getcwd
 from time import time, sleep
 
 sys.path.append(getcwd())
-from data_gestion.classes import Grid, deepcopy, Tree, Word
+from data_gestion.classes import deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
 from copy import deepcopy as deep
+
 
 def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_call=True):
     """
     Conflict BackJumping
     :param grid: grille sur laquelle on lance l'algorithme
     :param heuristic_function: fonction heuristique qui détermine quel mot sera instancié à chaque itération
+    :param uniq: True si un mot ne peut apparaître qu'une fois dans la grille, False sinon
+    :param stop: threading.Event qui permet d'arrêter le processus à chaque itération
+    :param mainwindow: Fenêtre principale, permettant d'accéder au panneau gauche et afficher la grille
+    :param first_call: True si c'est l'appel de départ ou non, sert surtout à renvoyer un affichage particulier si on trouve une solution ou non
     :type grid: Grid
     :return: Ensemble de variables "en conflit" s'il y en a
     :rtype: set
@@ -26,6 +31,17 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
             sleep(0.05)
             mainwindow.display_done(True)
         return set([])
+
+    # Pour le stepbystep c'est plus "pratique"
+    if first_call:
+        # Affichage si demandé
+        if mainwindow:
+            # mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.1)
+        if stop:
+            stop.wait()
+            stop.clear()
 
     conflit = set([])
 
@@ -60,7 +76,8 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
 
         # forward check avec récupèration des mots dont les domaines ont été modifiés
         modif = xk.update_related_variables_domain()
-        conflit_local = set([w for w in modif if w in grid.instanciated_words])  # ne devrait jamais arriver à cause du FC
+        conflit_local = set(
+            [w for w in modif if w in grid.instanciated_words])  # ne devrait jamais arriver à cause du FC
 
         if uniq:
             same_size_words = [w for w in grid.uninstanciated_words if w.length == xk.length]
@@ -76,7 +93,8 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
                 if conflit_fils:
                     conflit = conflit.union(conflit_fils)
                 else:
-                    conflit = conflit.union(set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
+                    conflit = conflit.union(
+                        set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
             else:
                 conflit = conflit_fils
                 if conflit:
@@ -110,6 +128,10 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
     Conflict BackJumping
     :param grid: grille sur laquelle on lance l'algorithme
     :param heuristic_function: fonction heuristique qui détermine quel mot sera instancié à chaque itération
+    :param uniq: True si un mot ne peut apparaître qu'une fois dans la grille, False sinon
+    :param stop: threading.Event qui permet d'arrêter le processus à chaque itération
+    :param mainwindow: Fenêtre principale, permettant d'accéder au panneau gauche et afficher la grille
+    :param first_call: True si c'est l'appel de départ ou non, sert surtout à renvoyer un affichage particulier si on trouve une solution ou non
     :type grid: Grid
     :return: Ensemble de variables "en conflit" s'il y en a
     :rtype: set
@@ -123,6 +145,17 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
             sleep(0.05)
             mainwindow.display_done(True)
         return set([])
+
+    # Pour le stepbystep c'est plus "pratique"
+    if first_call:
+        # Affichage si demandé
+        if mainwindow:
+            # mainwindow.grid = grid
+            mainwindow.display_grid()
+            sleep(0.1)
+        if stop:
+            stop.wait()
+            stop.clear()
 
     conflit = set([])
 
@@ -170,7 +203,8 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
                 if conflit_fils:
                     conflit = conflit.union(conflit_fils)
                 else:
-                    conflit = conflit.union(set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
+                    conflit = conflit.union(
+                        set([w for (w, ind1, ind2) in xk.binary_constraints if w in grid.instanciated_words]))
             else:
                 conflit = conflit_fils
                 break
@@ -191,15 +225,15 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
 if __name__ == '__main__':
     t1 = time()
     dico = read_dictionary(sys.argv[1])
-    print("Temps de création du dictionnaire : " + str(time()-t1))
+    print("Temps de création du dictionnaire : " + str(time() - t1))
     t = time()
     grid1 = read_grid(sys.argv[2], dico)
-    print("Temps de création de la grille: " + str(time()-t))
+    print("Temps de création de la grille: " + str(time() - t))
     grid2 = deep(grid1)
     t = time()
     ac3(grid2)
     res = CBJ_without_FC(grid2, heuristic_size_and_constraints, True)
-    print("Temps de calcul de l'algo : " + str(time()-t))
+    print("Temps de calcul de l'algo : " + str(time() - t))
     print([w.id for w in res])
     if not res:
         instanciation = [(w.id, w.domain.list_words()) for w in grid2.instanciated_words]
@@ -211,7 +245,7 @@ if __name__ == '__main__':
     res = CBJ(grid1, heuristic_size_and_constraints, True)
 
     print("Temps de calcul de l'algo : " + str(time() - t))
-    print("Temps total : " + str(time()-t1))
+    print("Temps total : " + str(time() - t1))
     print([w.id for w in res])
     if not res:
         instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
