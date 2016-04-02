@@ -8,7 +8,7 @@ from data_gestion.classes import Grid, Tree, Word, deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 
-def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0)):
+def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0), uniq=True):
     """
     Branch and Bound
     :param grid_words: Mot à instancier
@@ -17,7 +17,6 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0)):
     :param borne: Borne inférieur
     :return: Solution optimale
     """
-
     if grid_words:
         variable = grid_words[0]
         new_grid_words = copy(grid_words)
@@ -30,44 +29,41 @@ def bnb(nvar, grid_words, dico_values, nodes=[], node=([], 0), best=([], 0)):
         domains[variable] = deepcopy(variable.domain)
 
         for word in variable_domain:
-            consistant = True
 
-            # Instanciation
-            variable.domain = Tree(word)
-            modif = variable.update_related_variables_domain()
+            if not uniq or (uniq and word not in node[0]):
+                consistant = True
 
-            if any([w.domain.cardinality() == 0 for w in modif]):
-                consistant = False
+                # Instanciation
+                variable.domain = Tree(word)
+                modif = variable.update_related_variables_domain()
 
-            for w in modif:
-                w.domain = deepcopy(domains[w])
+                if any([w.domain.cardinality() == 0 for w in modif]):
+                    consistant = False
 
-            # Calcule des bornes inf et sup
-            inf, sup = bounds(new_grid_words, node, word, dico_values)
+                    for w in modif:
+                        w.domain = deepcopy(domains[w])
+                    variable.domain = deepcopy(domains[variable])
 
-            # Ajouter noeud à l'arbre de recherche
-            (new_node, new_sup) = (copy(node[0])+[word], sup)
-            nodes += [(new_node, new_sup)]
-            print(new_node)
+                # Calcule des bornes inf et sup
+                inf, sup = bounds(new_grid_words, node, word, dico_values)
 
-            # Verifier consistance
-            # Si non consistant, rétablire domaine
+                # Ajouter noeud à l'arbre de recherche
+                (new_node, new_sup) = (copy(node[0])+[word], sup)
+                nodes += [(new_node, new_sup)]
 
-            if consistant:
-                # Si la valeur trouvée à une feuille > à la valeur de la meilleure solution trouvée, retenir nouvelle solution
-                if (len(new_node) == nvar) and inf > best[1]:
-                    best = (new_node, inf)
+                # Verifier consistance
+                if consistant:
+                    # Si on est à une feuille de l'arbre et la valeur trouvée est > à la valeur de la meilleure solution trouvée, retenir nouvelle solution
+                    if (len(new_node) == nvar) and inf > best[1]:
+                        best = (new_node, inf)
 
-                # Si borne supérieur > à la valeur de la meilleure solution trouvée, explorer noeud
-                if sup > best[1]:
-                    nodes, best = bnb(nvar, new_grid_words, dico_values, nodes, (new_node, new_sup), best)
-            else:
-                variable.domain = deepcopy(domains[variable])
+                    # Si borne supérieur > à la valeur de la meilleure solution trouvée, explorer noeud
+                    if sup > best[1]:
+                        nodes, best = bnb(nvar, new_grid_words, dico_values, nodes, (new_node, new_sup), best, uniq)
 
     return nodes, best
 
 def bounds(grid_words, node, word, dico_values):
-    #print node
     inf = float(dico_values[word])
     for a_word in node[0]:
         inf += float(dico_values[a_word])
@@ -98,7 +94,7 @@ def test_instance():
     print("Temps de création de la grille: " + str(time() - t3))
     t = time()
     n = len(grid.grid_to_words())
-    a, best = bnb(n, grid.grid_to_words(), dico_values)
+    a, best = bnb(n, grid.grid_to_words(), dico_values, uniq=True)
     print("Temps d'exploration de l'arbre: " + str(time() - t))
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")
@@ -132,13 +128,13 @@ def test_mots_androide():
     t = time()
     n = len(grid.grid_to_words())
     print(n, len(dico_values))
-    a, best = bnb(n, grid.grid_to_words(), dico_values)
+    a, best = bnb(n, grid.grid_to_words(), dico_values, uniq=True)
     print("Temps d'exploration de l'arbre: " + str(time() - t))
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")
 
 
 if __name__ == '__main__':
-    # test_instance()
+    test_instance()
     # test_frequence()
-    test_mots_androide()
+    #test_mots_androide()
