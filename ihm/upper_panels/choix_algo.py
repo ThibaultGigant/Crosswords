@@ -17,7 +17,8 @@ heuristic = {
     1: heuristic_min_domain,
     2: heuristic_max_constraints,
     3: heuristic_size_and_constraints,
-    4: heuristic_constraints_and_size
+    4: heuristic_constraints_and_size,
+    5: heuristics_max_constraints_with_instanciated
 }
 
 
@@ -136,10 +137,13 @@ class ChoixAlgo(Frame):
                                        variable=self.var_heur, value=1)
         radio_max_constraints = Radiobutton(self, text="Plus grand nombre de contraintes binaires",
                                             variable=self.var_heur, value=2)
-        radio_domain_constraints = Radiobutton(self, text="Taille du domaine puis nombre de contraintes",
+        radio_domain_constraints = Radiobutton(self, text="Min taille du domaine puis nombre de contraintes",
                                                variable=self.var_heur, value=3)
-        radio_constaints_domain = Radiobutton(self, text="Nombre de contraintes puis taille du domaine",
+        radio_constaints_domain = Radiobutton(self, text="Plus de contraintes puis min taille du domaine",
                                               variable=self.var_heur, value=4)
+        radio_constraints_instanciated = Radiobutton(self, text="Plus de contraintes avec un instancié puis min taille",
+                                                     variable=self.var_heur, value=5)
+
         radio_domain_constraints.select()
 
         # Affichage des widgets
@@ -149,6 +153,7 @@ class ChoixAlgo(Frame):
         radio_max_constraints.grid(sticky=W, columnspan=4)
         radio_domain_constraints.grid(sticky=W, columnspan=4)
         radio_constaints_domain.grid(sticky=W, columnspan=4)
+        radio_constraints_instanciated.grid(sticky=W, columnspan=4)
 
     def launch_button(self):
         """

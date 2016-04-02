@@ -271,7 +271,7 @@ def test_lecture_frequence():
     dicodomains, dicovaleurs = read_text_frequency(filename)
     print(dicovaleurs)
     filename = sys.argv[2]
-    write_dictionnary(filename, dicodomains, dicovaleurs)
+    write_dictionnary(filename, dicodomains)
 
 
 def test_lecture_valued_dico():
@@ -282,7 +282,7 @@ def test_lecture_valued_dico():
 
 if __name__ == '__main__':
     # test_lecture_grille()
-    # test_lecture_frequence()
-    test_lecture_valued_dico()
+    test_lecture_frequence()
+    # test_lecture_valued_dico()
 
 

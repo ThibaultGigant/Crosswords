@@ -27,7 +27,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(0.1)
             mainwindow.display_done(True)
         return True
 
@@ -65,7 +65,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(0.1)
         if stop:
             stop.wait()
             stop.clear()
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     # res = backtrack(grid1, heuristic_max_constraints)
     # res = backtrack(grid1, heuristic_constraints_and_size, False)
-    # res = backtrack(grid1, heuristic_next, True)
+    # res = backtrack(grid1, heuristics_max_constraints_with_instanciated, True)
     # res = backtrack(grid1, heuristic_min_domain, False)
     res = backtrack(grid1, heuristic_size_and_constraints, True)
 
