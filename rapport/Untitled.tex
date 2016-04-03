@@ -116,7 +116,7 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 \end{description}
 
 \subsection{Implémentation}
-Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici ce qui a été effectué pour ce projet
+Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici le détail de ce qui a été effectué pour ce projet.
 
 \subsubsection{Les domaines des variables}
 \label{domaines}
@@ -259,42 +259,129 @@ Cette fois, l'algorithme du cours a été appliqué à la lettre. Notons toutefois q
 Il est d'ailleurs intéressant de noter, comme le montrent les résultats de la section suivante, que le $CBJ$ donne une solution moins rapidement que $RAC$. La raison pour cela a été donnée dans le dernier paragraphe de la section précédente (\ref{RAC}).
 
 \subsection{Exp\'{e}rimentation}
+Les algorithmes ont été appliqués aux grilles données dans le sujet, ainsi qu'à quelques autres grilles récupérées du site \url{http://puzzles.about.com/od/howtostutorials/ig/CrosswordGrids/}, et à quelques instances générées aléatoirement. Les résultats sont stockés dans le dossier du projet :\\
+\texttt{Crosswords/Data/Results/Grilles\_Resolues/}\\
+et leurs images correspondantes en annexe de ce rapport.
 
 \subsubsection*{Application}
 
-Dans cette section, nous allons tester les performances de nos algorithmes, d'abord en utilisant RAC avec Forward Checking sans AC3 pr\'{e}alable, ensuite RAC avec Forward Checking et AC3 pr\'{e}alable.
+Dans cette section, nous allons tester les performances de nos algorithmes, d'abord en utilisant RAC. Les graphes suivants représentent le temps d'exécution des la grilles A et B (grilles de respectivement 5 et 7 cases de côté du sujet), en fonction de l'heuristique appliquée, avec et sans exécution de AC3 :
 
-\bigskip
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.3]{Images/gridA_ac3.png}
+		\caption{Temps d'exécution de la grille A avec et sans AC3}
+	\end{center}
+\end{figure}
 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.3]{Images/gridB_ac3.png}
+		\caption{Temps d'exécution de la grille B avec et sans AC3}
+	\end{center}
+\end{figure}
+
+On remarque que sans AC3, les temps d'exécution sont globalement plus élevés, quelle que soit l'heuristique employée. Avec AC3, les domaines ont été écrémés et il y a donc moins de possibilités à passer en revue. Les points où AC3 est en-dessous sont probablement dû aux aléas des heuristiques qui peuvent donner des instances plus compliquées aux instances lancées après AC3 qu'aux autres. Nous avons tenté de diminuer l'effet de cet aléa en lançant l'algorithme 5 fois, le point affiché étant une moyenne des temps d'exécution de ces 5 lancers. Malheureusement cela n'a pas suffit. Quoi qu'il en soit, dans la suite, on appliquera donc AC3 avant chaque lancement.
+
+De même, sur le graphe suivant, on remarque que l'heuristique renvoyant simplement le mot suivant dans la liste des variables non-instanciées est de loin le plus long. L'échelle des temps d'exécution a même dû être passée en logarithmique pour ne pas effacer les différences sur les heuristiques suivantes. Cela s'explique d'autant plus que les variables lors de leur création sont placées de telle sorte que les mots horizontaux se situent au début de la liste, et les mots verticaux à la fin de la liste. Ainsi, avant de déterminer qu'une instanciation d'un mot vertical n'est pas correcte, il faut attendre que tous les mots horizontaux soient placés, et le nombre de conflits est alors élevé.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{Images/gridA_heuristics.png}
+		\caption{Temps d'exécution de la grille A en fonction de l'heuristique utilisée}
+	\end{center}
+\end{figure}
+
+En revanche, on observe que les heuristiques donnant un temps minimal sont celles qui prennent en compte la taille des domaines en premier. De plus, si on ajoute le fait de prendre les variables ayant le plus de contraintes binaires après ceci, on diminue encore légèrement le temps d'exécution. Pour la suite, nous utiliserons donc cette heuristique : \emph{heuristic\_size\_and\_constraints} qui semble la plus rapide quelle que soit la grille d'entrée.
+
+Lorsqu'on regarde le temps d'exécution de l'algorithme $RAC$ en fonction de la taille de la grille (en nombre de cases), on observe la chose suivante :
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{Images/taille_compare_rac.png}
+		\caption{Temps d'exécution des grilles à disposition}
+	\end{center}
+\end{figure}
+
+Les grilles étant rangées par ordre croissant, on peut s'attendre à ce que la courbe soit strictement croissante. Mais il n'en est rien. Le tableau suivant explique cet état de fait.
+
+\medskip
 \noindent
-\begin{tabularx}{\textwidth}{ |X|X|X|X| }
-\hline
- & Grille A & Grille B & Grille C  \\
-\hline
-AC3 & t1 & t2 & t3 \\
-\hline 
-FC sans AC3 pr\'{e}alable & t1 & t2 & t3  \\
-\hline
-FC avec AC3 pr\'{e}alable & t1 & t2 & t3  \\
-\hline
+\begin{tabularx}{\textwidth}{|X|X|X|X|}
+	\hline
+	\textbf{Grille} & \textbf{Nombre de mots} & \textbf{Nombre de contraintes binaires total} & \textbf{Nombre de contraintes / Nombre de mots}\\
+	\hline
+	randomGrid5x5.txt & 9 & 10 & 1.1111111111111112\\
+	\hline
+	gridA.txt & 10 & 19 & 1.9\\
+	\hline
+	gridB.txt & 18 & 33 & 1.8333333333333333\\
+	\hline
+	gridC.txt & 24 & 52 & 2.1666666666666665\\
+	\hline
+	randomGrid10x10.txt & 29 & 40 & 1.3793103448275863\\
+	\hline
+	grid13x13GridIndex.txt & 68 & 124 & 1.8235294117647058\\
+	\hline
 \end{tabularx}
+
+\medskip
+On remarque alors clairement que plus que la taille, c'est bien le ratio entre nombre de variables de la grille et nombre de contraintes binaires qui influe sur le temps d'exécution. Plus ce ratio est élevé, et plus le temps d'exécution est grand.
+
+Maintenant, si l'on s'intéresse à l'influence de la taille du dictionnaire sur le temps d'exécution d'une grille, le graphe suivant, représentant le temps d'exécution de $RAC$ sur la grille C (celle de 9 de côté du sujet) nous donne une bonne indication :
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{Images/gridC_dicos.png}
+		\caption{Temps d'exécution de $RAC$ sur la grille C en fonction du dictionnaire appliqué}
+	\end{center}
+\end{figure}
+
+On peut noter que le temps d'exécution augmente au début avec la taille du dictionnaire. Mais les deux dernier dictionnaires, assez conséquents de taille approximative 133000 mots et 135000 mots nous donnent tort. Il est probable que ces dictionnaires s'arrangent bien avec la grille. Il faut donc comparer avec une autre grille, que nous donne des résultats plus ou moins similaires :
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{Images/gridA_dicos.png}
+		\caption{Temps d'exécution de $RAC$ sur la grille A en fonction du dictionnaire appliqué}
+	\end{center}
+\end{figure}
+
+On peut alors supposer qu'à un certain moment, si l'on augmente la taille d'un dictionnaire, le Forward Checking fonctionne plutôt bien et élimine assez vite des pans entiers de possibilités, et on trouve une solution aussi rapidement voire plus vite qu'avec un plus petit dictionnaire. De plus, on peut supposer que de nombreux mots dans les plus grands dictionnaires ne s'appliquent tout simplement pas à grille qu'on résout. Ainsi, en réalité, même si le dictionnaire est plus grand, le nombre de mots dans les domaines est diminué.
+Bien entendu, cela est valable si nous ne nous situons pas dans des cas pathollogiques nécessitant de parcourir tout le domaine de chaque variable.
 
 \subsubsection*{Conflict BackJumping}
 
+L'algorithme de Conflict BackJumping est somme toute assez similaire algorithmiquement que le Retour Arrière Chronologique. La seule différence c'est qu'il ne perd pas autant de temps lors d'un retour arrière en remontant directement jusque là où se présente un conflit. Les tendances des courbes précédentes avec les mêmes paramètres seront identiques.
+
+Il faut alors comparer les deux algorithmes : $RAC$ et $CBJ$, ce qui est fait dans le graphe suivant :
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{Images/compare_algos.png}
+		\caption{Temps d'exécution de $RAC$ et $CBJ$ en fonction de la grille lancée}
+	\end{center}
+\end{figure}
+
+Ce qu'on remarque alors, c'est que les deux algorithmes se suivent de près, à l'exception de quelques points, qui sont probablement dus à des coups de \og chance \fg{} de la part de $RAC$. En effet, comme expliqué dans la section \ref{RAC}, ce résultat était attendu. Avec l'amélioration de $RAC$ qui a été implémentée, les deux algorithmes se ressemblent fortement. On peut même dire que pour les plus grandes instances, l'algorithme $RAC$ tel que nous l'avons modifié est souvent plus rapide que $CBJ$.
+
 \subsubsection*{Applications sur des grilles de tailles plus grandes}
 
-La m\'{e}thode ( ) \'{e}tant la plus efficace, on l'applique sur des instances de grilles de tailles plus grandes.
+La méthode de Retour Arrière Chronologique accompagnée d'une heuristique qui choisit d'instancier d'abord les mots de plus petit domaine (puis ayant le plus de contraintes binaires) donne des résultats satisfaisants même sur des grandes instances. Elle a donc été appliquée à des instances grandissantes.
 
 \bigskip
 
 \noindent
-\begin{tabularx}{\textwidth}{ |X|X|X| }
+\begin{tabularx}{\textwidth}{ |X|X| }
 \hline
- & Temps d'\'{e}xecution & \% de solution trouv\'{e}e  \\
+\textbf{Taille (nombre de cases de côté)} & \textbf{Temps d'\'{e}xecution}  \\
 \hline
-Taille = 10 & t1 & \% \\
+10 & t1\\
 \hline 
-Taille = 100 & t2 & \%  \\
+20 & t2\\
+\hline 
+25 & t2\\
+\hline 
+30 & t2\\
 \hline
 \end{tabularx}
 

@@ -2,6 +2,7 @@
 
 import sys
 from os import getcwd
+from os.path import join
 from time import time, sleep
 
 sys.path.append(getcwd())
@@ -104,7 +105,10 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
     return False
 
 
-if __name__ == '__main__':
+def launch_rac():
+    """
+    Lancement classique
+    """
     t1 = time()
     dico = read_dictionary(sys.argv[1])
     print("Temps de création du dictionnaire : " + str(time()-t1))
@@ -128,3 +132,60 @@ if __name__ == '__main__':
         instanciation = [(w.id, w.domain.list_words()) for w in grid1.instanciated_words]
         instanciation.sort(key=lambda x: x[0])
         print(instanciation)
+
+
+def grandes_instances():
+    dir = "Data/Grilles"
+    files = [
+        "randomGrid10x10.txt",
+        "randomGrid20x20.txt",
+        "randomGrid25x25.txt",
+        "randomGrid30x30.txt"
+    ]
+
+    dico = read_dictionary("Data/Dictionnaires/135000-mots-fr.txt")
+    for f in files:
+        print(f)
+        grid = read_grid(join(dir, f), dico)
+        t = time()
+        res = backtrack(grid, heuristic_size_and_constraints)
+        print("Grille " + f + " calculée en " + str(time()-t) + " secondes")
+        if res:
+            write_partially_solved_grid(join("Data/Results/Grilles_Resolues", f), grid)
+        else:
+            print("Grille " + f + " non résolue")
+
+
+def store_grilles_enonce():
+    dir_files = "Data/Grilles"
+    files = [
+        "gridA.txt",
+        "gridB.txt",
+        "gridC.txt"
+    ]
+    dir_dicos = "Data/Dictionnaires"
+    dicos = [
+        "ANDROIDE.txt",
+        "850-mots-us.txt",
+        "22600-mots-fr.txt",
+        "58000-mots-us.txt",
+        "133000-mots-us.txt",
+        "135000-mots-fr.txt"
+    ]
+    for f in files:
+        print(f)
+        for dico_file in dicos:
+            dico = read_dictionary(join(dir_dicos, dico_file))
+            grid = read_grid(join(dir_files, f), dico)
+            t = time()
+            res = backtrack(grid, heuristic_size_and_constraints)
+            print("Grille " + f + " calculée en " + str(time()-t) + " secondes avec le dico " + str(dico_file))
+            if res:
+                write_partially_solved_grid(join("Data/Results/Grilles_Resolues", f), grid)
+            else:
+                print("Grille " + f + " non résolue")
+
+
+if __name__ == '__main__':
+    # launch_rac()
+    grandes_instances()
