@@ -5,13 +5,18 @@
 \contentsline {subsection}{\numberline {1.2}Impl\'ementation}{1}
 \contentsline {subsubsection}{\numberline {1.2.1}Les domaines des variables}{2}
 \contentsline {subsubsection}{\numberline {1.2.2}Algorithme d'arc consistance $AC3$ }{3}
-\contentsline {subsubsection}{\numberline {1.2.3}Heuristiques}{4}
-\contentsline {subsubsection}{\numberline {1.2.4}Algorithme du Retour Arri\`ere Chronologique avec Forward Checking}{5}
-\contentsline {subsubsection}{\numberline {1.2.5}Conflict BackJumping}{5}
-\contentsline {subsection}{\numberline {1.3}Exp\'{e}rimentation}{5}
-\contentsline {section}{\numberline {2}Extension au cas pond\'{e}r\'{e}}{12}
-\contentsline {subsection}{\numberline {2.1}Mod\'{e}lisation}{12}
-\contentsline {subsection}{\numberline {2.2}Exp\'{e}rimentation}{13}
-\contentsline {subsection}{\numberline {2.3}Exp\'{e}rimentation}{14}
-\contentsline {subsection}{\numberline {2.4}Bonus}{14}
-\contentsline {section}{Conclusion}{15}
+\contentsline {subsubsection}{\numberline {1.2.3}Heuristiques}{5}
+\contentsline {subsubsection}{\numberline {1.2.4}Algorithme du Retour Arri\`ere Chronologique avec Forward Checking}{6}
+\contentsline {subsubsection}{\numberline {1.2.5}Conflict BackJumping}{6}
+\contentsline {subsection}{\numberline {1.3}Exp\'{e}rimentation}{7}
+\contentsline {section}{\numberline {2}Extension au cas pond\'{e}r\'{e}}{14}
+\contentsline {subsection}{\numberline {2.1}Mod\'{e}lisation}{14}
+\contentsline {subsubsection}{\numberline {2.1.1}Principe de s\'{e}paration}{14}
+\contentsline {subsubsection}{\numberline {2.1.2}Principe d'\'{e}valuation}{14}
+\contentsline {subsubsection}{\numberline {2.1.3}Parcours de l'arbre}{15}
+\contentsline {subsection}{\numberline {2.2}Impl\'{e}mentation}{15}
+\contentsline {subsection}{\numberline {2.3}Exp\'{e}rimentation}{15}
+\contentsline {subsection}{\numberline {2.4}Bonus}{18}
+\contentsline {section}{Conclusion}{19}
+\contentsline {section}{\numberline {A}Annexes}{20}
+\contentsline {subsection}{\numberline {A.1}Exemples de Grilles vides et leur r\'esolution}{20}
