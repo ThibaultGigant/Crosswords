@@ -17,6 +17,7 @@
 \usepackage{float}
 \usepackage[linesnumbered, ruled]{algorithm2e}
 \usepackage{url}
+\usepackage{relsize}
 
 \newcommand{\hmark}{\rule{\linewidth}{0.5mm}}
 
@@ -87,12 +88,9 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 	\bigskip
 	
 	\item[Domaines :] Soit $dict$ un dictionnaire de mots admissibles:
-	
 	\begin{align*}
 	D(x_{i}) =dict
 	\end{align*}
-	
-	\bigskip
 	
 	\item[Contraintes :]\hspace{0.1cm}\\
 	\begin{itemize}
@@ -102,11 +100,13 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 		len(x_{i}) = l_{i}
 		\label{contrainte1}
 		\end{equation}
+		
 		\item Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
 		\begin{equation} 
 		x_{i}[q] = x_{j}[p]
 		\label{contrainte2}
 		\end{equation}
+		
 		\item Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
 		\begin{equation} 
 		\textit{AllDiff}~(x_{1},x_{2},...x_{m})
@@ -116,7 +116,7 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 \end{description}
 
 \subsection{Implémentation}
-Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici ce qui a été effectué pour ce projet
+Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici ce qui a été effectué pour ce projet.
 
 \subsubsection{Les domaines des variables}
 \label{domaines}
@@ -137,7 +137,7 @@ Il faut aussi noter que pour des dictionnaires de petite taille, la probabilité 
 Pour chaque variable, on donnera alors comme domaine l'arbre du dictionnaire récupéré correspondant à sa taille. En lui donnant un arbre contenant uniquement les mots de sa taille, on effectue déjà la satisfaction de la contrainte (\ref{contrainte1}) est déjà vérifiée. Il n'y aura plus que les deux autres contraintes à satisfaire.
 
 \subsubsection{Algorithme d'arc consistance $AC3$ }
-Grâce à la représentation des domaines explicitée dans la sous-section précédente (\ref{domaines}), cet algorithme est réellement simple à appliquer. L'algorithme du cours a été appliqué, avec une légère modification : lorsqu'on regarde un couple de variables liées par une contrainte binaire, les deux domaines sont modifiés à la même itération. Voici l'algorithme appliqué
+Grâce à la représentation des domaines explicitée dans la sous-section précédente (\ref{domaines}), cet algorithme est réellement simple à appliquer. L'algorithme du cours a été appliqué, avec une légère modification : lorsqu'on regarde un couple de variables liées par une contrainte binaire, les deux domaines sont modifiés à la même itération. Voici l'algorithme appliqué:
 
 \begin{algorithm}[H]
 	\caption{Procédure $AC3$}
@@ -191,7 +191,7 @@ Grâce à la représentation des domaines explicitée dans la sous-section précédent
 	
 \end{algorithm}
 
-Avec la procédure REVISE suivante :
+Avec la procédure REVISE suivante :\\
 
 \begin{algorithm}[H]
 	\caption{Procédure REVISE}
@@ -229,6 +229,8 @@ Avec la procédure REVISE suivante :
 		
 	}
 \end{algorithm}
+
+\bigskip
 
 En procédant comme cela, on ne calcule pour chaque couple de variable qu'une seule fois les lettres communes et leur intersection, en modifiant les domaines des deux variables. En suivant à la lettre l'algorithme du cours, on aurait été obligé de calculer ces données une fois pour $(x_i, x_j)$ et une fois pour $(x_j, x_i)$. On améliore ainsi de beaucoup la vitesse de calcul.
 
@@ -304,7 +306,7 @@ Taille = 100 & t2 & \%  \\
 
 \subsection{Mod\'{e}lisation}
 
-Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids réel positif ou nul appartenant à $\left[0,1\right]$ repr\'{e}sentant l'importance qu'un utilisateur attache \`{a} ce mot. Pour trouver la solution optimale du probl\`{e}me, c-\`{a}-d la solution de poids maximum dans la grille, il faut utiliser une m\'{e}thode exacte, comme le \og Branch \& Bound \fg{} qui sera repr\'{e}sent\'{e} par un arbre de recherche binaire.
+Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids réel positif ou nul appartenant à $\left[0,1\right]$ repr\'{e}sentant l'importance qu'un utilisateur attache \`{a} ce mot ou la fr\'{e}quence d'occurence de ce mot dans un texte. Pour trouver la solution optimale du probl\`{e}me, c-\`{a}-d la solution de poids maximum dans la grille, il faut utiliser une m\'{e}thode exacte, comme le \og Branch \& Bound \fg{} qui sera repr\'{e}sent\'{e} par un arbre de recherche binaire.
 
 Chaque sous-probl\`{e}me cr\'{e}\'{e} au cours de l'exploration est d\'{e}sign\'{e} par un n\oe{}ud qui repr\'{e}sente les mots choisis pour chaque variable $x_{i}$ de la grille. Les branches de l'arbre symbolisent le processus de s\'{e}paration, elles repr\'{e}sentent la relation entre les n\oe{}uds (ajout du mot $m_{i} \in D(x_{i}$). Cette m\'{e}thode arborescente nous permettra donc d'\'{e}num\'{e}rer toutes les solutions possibles.
 
@@ -312,9 +314,9 @@ En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou
 
 Pour am\'{e}liorer la complexit\'{e} du \og Branch \& Bound \fg, seules les solutions qui v\'{e}rifient les contraintes de consistances potentiellement de bonne qualit\'{e} seront \'{e}num\'{e}r\'{e}es, les solutions ne pouvant pas conduire \`{a} am\'{e}liorer la solution courante ne sont pas explor\'{e}es. \\
 
-Le \og Branch \& Bound \fg{} est bas\'{e} sur trois principes :
+Le \og Branch \& Bound \fg{} est bas\'{e} sur trois principes : le principe de s\'{e}paration, le principe d'\'{e}valuation et le parcours de l'arbre.
 
-\subsubsection*{Principe de s\'{e}paration}
+\subsubsection{Principe de s\'{e}paration}
 
 Le principe de s\'{e}paration consiste \`{a} diviser le probl\`{e}me en un certain nombre de sous-probl\`{e}mes qui ont chacun leur ensemble de solutions r\'{e}alisables. En r\'{e}solvant tous les sous-probl\`{e}mes et en prenant la meilleure solution trouv\'{e}e, on est assur\'{e} d'avoir r\'{e}solu le probl\`{e}me initial. Ce principe de s\'{e}paration est appliqu\'{e} de mani\`{e}re r\'{e}cursive \`{a} chacun des sous-ensembles tant que celui-ci contient plusieurs solutions. \\
 Remarque : La proc\'{e}dure de s\'{e}paration d'un ensemble s'arr\^{e}te lorsqu'une des conditions
@@ -322,22 +324,80 @@ suivantes est v\'{e}rifi\'{e}e : \\
 -- on sait que l'ensemble ne contient aucune solution admissible (cas o\`{u} les mots ne v\'{e}rifient pas les conditions de consistance) ; \\
 -- on conna\^{i}t une solution meilleure que toutes celles de l'ensemble ;
 
-\subsubsection*{Principe d'\'{e}valuation}
+\subsubsection{Principe d'\'{e}valuation}
 
 Le principe d'\'{e}valuation a pour objectif de conna\^{i}tre la qualit\'{e} des n\oe{}uds \`{a} traiter. La m\'{e}thode de \og Branch and Bound \fg{} utilise deux types de bornes : une borne inf\'{e}rieure de la fonction d'utilit\'{e} du probl\`{e}me initial et une borne sup\'{e}rieure de la fonction d'utilit\'{e}. La connaissance d'une borne inf\'{e}rieure du probl\`{e}me et d'une borne sup\'{e}rieure de la fonction d'utilit\'{e} de chaque sous-probl\`{e}me permet d'arr\^{e}ter  l'exploration d'un sous-ensemble de
 solutions qui ne sont pas candidats \`{a} l'optimalit\'{e}.\\
--- borne sup\'{e}rieure:\\
--- borne inf\'{e}rieure:
 
-\subsubsection*{Parcours de l'arbre}
+Supposons qu'on est \`{a} un noeud de l'arbre et on a une solution partielle $s_{p}$ au probl\`{e}me. Soit $v(s_p)$ la valeur de cette solution partielle, d\'{e}finie comme agr\'{e}gation des poids des mots qui figurent dans $s_{p}$.
+
+\bigskip
+
+\textbf{Borne inf\'{e}rieure} ~ La borne inf\'{e}rieure est d\'{e}finie comme la somme des poids des mots des variables instanci\'{e}es. Elle nous permet d'obtenir la valeur de la solution trouv\'{e}e \`{a} une feuille de l'arbre.
+
+\begin{align*}
+b_{inf} = v(s_p)
+\end{align*}
+
+Si la borne inf\'{e}rieure \`{a} une feuille de l'arbre (c-\`{a}-d apr\`{e}s avoir instancier les n variables de la grille) est sup\'{e}rieure \`{a} la valeur de la solution courante, on a trouv\'{e} une meilleure solution.
+
+\bigskip
+
+\textbf{Borne sup\'{e}rieure} ~ Pour \'{e}valuer la qualit\'{e} de ce noeud, nous avons d\'{e}fini la borne sup\'{e}rieure par la somme de la valeur de la solution partielle et du poids maximum des mots de chaque variable $x_i$ non encore instanc\'{e}e dans la grille.
+
+\begin{align*}
+b_{sup} = v(s_p) + \sum_{x_i } \max_{m_{j} \in D(x_{i})} p(m_{j})
+\end{align*}
+
+En effet, dans le meilleure des cas, la solution optimale est form\'{e}e de mots dont le poids est maximum dans le domaine de chaque variable de la grille, donc on obtient bien une borne sup\'{e}rieure \`{a} chaque sous-probl\`{e}me repr\'{e}sent\'{e} par les n\oe uds de l'arbre. Si cette borne sup\'{e}rieure est inf\'{e}rieure \`{a} la solution courante, il est inutile de continuer \`{a} explorer ce n\oe ud, puisque cette solution partielle ne pourrait pas conduire \`{a} am\'{e}liorer la solution courante.
+
+\subsubsection{Parcours de l'arbre}
 
 Le type de parcours de l'arbre permet de choisir le prochain n\oe{}ud \`{a} s\'{e}parer parmi l'ensemble des n\oe{}uds de l'arborescence. L'exploration en profondeur privil\'{e}gie les sous-probl\`{e}mes obtenus par le plus grand nombre de s\'{e}parations appliqu\'{e}es au probl\`{e}me de d\'{e}part, c'est-\`{a}-dire aux sommets les plus \'{e}loign\'{e}s de la racine (= de profondeur la plus \'{e}lev\'{e}e). L'obtention rapide d'une solution admissible en est l'avantage.
 
+\subsection{Impl\'{e}mentation}
+
+Pour l'impl\'{e}mentation du \og Branch \& Bound \fg{}, nous avons d'abord tri\'{e} les mots du domaine de chaque variable selon leur poids par ordre d\'{e}croissant. Ceci nous permet d'affecter d'abord les mots auxquels on attache plus d'importance, ou sont plus fr\'{e}quent dans un texte aux variables de la grille.
+
 \subsection{Exp\'{e}rimentation}
 
-\newpage
+\subsubsection*{En fonction de la taille du dictionnaire}
 
-\subsection{Exp\'{e}rimentation}
+Afin de construire un graphe montrant l'\'{e}volution du temps en fonction de la taille du dictionnaire, nous avons g\'{e}n\'{e}r\'{e} 10 instances de dictionnaires contenant chacun 52, 300, 400, 500, 650 et 850 mots pour une grille de taille $5 \times 5$. Nous avons aussi comparer les courbes lorsque les mots dans les grilles sont uniques ou pas.\\
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm]{Images/graphe1.png}
+\caption{Evolution du temps d'ex\'{e}cution du \og Branch \& Bound \fg{} en fonction de la taille du dictionnaire}
+\end{center}
+\end{figure}
+
+On remarque bien que le temps d'ex\'{e}cution augmente exponentiellement en fonction de la taille du dictionnaire. En effet, le temps d'ex\'{e}cution d\'{e}pend du nombre de n\oe uds dans l'arbre et ce dernier est \'{e}gal \`{a} $\mathlarger{\sum_{i = 0}^{n} \prod_{j = 0}^{i} |D(x_j)|}$ avec $n$ le nombre de variables dans la grille et $D(x_i)$ le domaine de la variable $x_{i}$, $\forall i \in \{0, ..., n\}$.\\
+
+\subsubsection*{En fonction de la taille de la grille}
+
+Pour \'{e}tudier l'\'{e}volution du temps en fonction de la taille de la grille, nous avons g\'{e}n\'{e}r\'{e} 6 grilles de tailles $n \times n$, $\forall n \in \{4, ..., 9\}$ avec un dictionnaire contenant 850 mots.\\
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm]{Images/graphe2.png}
+\caption{Evolution du temps d'ex\'{e}cution du \og Branch \& Bound \fg{} en fonction du nombre de variables dans la grille}
+\end{center}
+\end{figure}
+
+Dans cette deuxi\`{e}me \'{e}tude, le temps d'ex\'{e}cution ne d\'{e}pend pas de la taille de la grille, mais du nombre de variables dans la grille. En effet, les grilles \`{a} 10 et 15 variables avait toutes les deux la m\^{e}me taille ($7 \times 7$) mais ont des temps d'\'{e}xecution assez diff\'{e}rents dans le cas o\`{u} les mots ne peuvent apparaitre qu'une seule fois dans la grille. Il d\'{e}pend \'{e}galement du dictionnaire utilis\'{e}. En effet, dans notre exemple, pour des grilles \`{a} 12 variables, le temps d'ex\'{e}cution est sup\'{e}rieure aux temps d'ex\'{e}cution des grilles \`{a} 18 et 15 variables.
+
+De plus, il est int\'{e}ressant de noter que le temps d'ex\'{e}cution augmente plus rapidement en fonction de la taille du dictionnaire que du nombre de variable dans la grille.
+
+\subsubsection*{Grille ANDROIDE}
+
+Dans cette partie, nous avons constitu\'{e} un dictionnaire avec des mots-cl\'{e}s utilis\'{e}s fr\'{e}quemment dans les cours du master ANDROIDE, tous de poids 1, et des mots suppl\'{e}mentaires de poids inf\'{e}rieur \`{a} 1. Avec la grille C, on obtient la solution suivante:\\
+
+Image
+
+\bigskip
+
+Le temps d'ex\'{e}cution \'{e}tant \'{e}gal \`{a} (temps).
 
 \subsection{Bonus}
 La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Malheureusement, la taille de ce dictionnaire étant très grand, il est difficile de lancer l'algorithme de Branch And Bound qui prend beaucoup trop de temps.
