@@ -14,6 +14,9 @@
 \usepackage{fancyhdr}
 \usepackage{amsmath}
 \usepackage{tabularx}
+\usepackage{float}
+\usepackage[linesnumbered, ruled]{algorithm2e}
+\usepackage{url}
 
 \newcommand{\hmark}{\rule{\linewidth}{0.5mm}}
 
@@ -25,7 +28,7 @@
 
 \begin{figure}[t]
 \begin{center}
-\includegraphics[width=8cm]{upmc.png}
+\includegraphics[width=8cm]{Images/upmc.png}
 \end{center}
 \end{figure}
 
@@ -68,7 +71,7 @@ Morgan \textsc{Chopin}
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), forward checking ($FC$), conflict back-jumping ($CBJ$). La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
+Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), retour arrière chronologique ($RAC$) avec forward checking ($FC$), et conflict back-jumping ($CBJ$) avec $FC$ lui aussi aussi. La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
 
 Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. Chaque mot du dictionnaire sera muni d'un poids positif ou nul appartenant à $\left[0,1\right]$ et on d\'{e}veloppera un algorithme de type Branch and Bound qui permette de rechercher la solution optimale qui serait la solution de poids maximal dans la grille.
 
@@ -86,29 +89,174 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 	\item[Domaines :] Soit $dict$ un dictionnaire de mots admissibles:
 	
 	\begin{align*}
-	D(x_{i}) = \{ X \in dict \}
+	D(x_{i}) =dict
 	\end{align*}
 	
 	\bigskip
 	
 	\item[Contraintes :]\hspace{0.1cm}\\
 	\begin{itemize}
-		\item Soit $l_{i}$ la taille du mot en $i$:
+		\item Soit $l_{i}$ la taille du mot en $i$ et $len$ une fonction renvoyant le nombre de lettres d'une variable :
 		
 		\begin{equation} 
 		len(x_{i}) = l_{i}
+		\label{contrainte1}
 		\end{equation}
 		\item Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
 		\begin{equation} 
 		x_{i}[q] = x_{j}[p]
+		\label{contrainte2}
 		\end{equation}
 		\item Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
 		\begin{equation} 
 		\textit{AllDiff}~(x_{1},x_{2},...x_{m})
+		\label{contrainte3}
 		\end{equation}
 	\end{itemize}
 \end{description}
 
+\subsection{Implémentation}
+Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici ce qui a été effectué pour ce projet
+
+\subsubsection{Les domaines des variables}
+\label{domaines}
+Pour récupérer les domaines des variables, une fonction qui lit un fichier contenant une liste de mots a été créé. Cette fonction lit chaque mot du fichier et le stocke dans un dictionnaire \texttt{Python} dont les clés sont la taille des mots contenus. En revanche, les mots ne sont pas stockés sous la forme d'une simple liste. En effet, chaque domaine de mots d'une certaine longueur est représenté par une structure arborescente contenant tous les mots de cette taille. Chaque noeud contient un caractère. Ainsi, un chemin entre la racine et une feuille représente un mot. Les feuilles sont signifiées par une chaîne vide, signalant une fin de mot. La figure suivante montre un arbre contenant quatre mots de longueur 3 :
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[scale=0.8]{Images/arbre.png}
+		\caption{Représentation arborescente d'un domaine}
+	\end{center}
+\end{figure}
+
+De cette manière, il est alors beaucoup plus rapide d'effectuer des tests de consistance. Effectivement, si on souhaite par exemple fixer la première lettre au caractère \og $c$ \fg{} il ne suffit alors plus que de retirer tous les noeuds descendant de la racine dont la donnée n'est pas un \og $c$ \fg{}. En une itération, avec l'exemple précédent, on retirerait alors 3 mots en une seule itération. On peut alors faire de même si l'on veut fixer la deuxième lettre. Il suffit, pour chaque noeud sous la racine, de retirer ses fils qui n'ont pas la lettre voulue. Et ainsi de suite\dots
+
+Dans le pire des cas, on veut fixer la dernière lettre, et on devra parcourir tout l'arbre. En pratique, il est certain que le temps gagné en retirant les branches situées en haut de l'arbre compense largement ce problème.
+
+Il faut aussi noter que pour des dictionnaires de petite taille, la probabilité d'avoir des mots assez similaires, et donc un arbre plus restreint, est assez faible. Cependant, sur les petits dictionnaires, les algorithmes se résolvent très rapidement, car les domaines des variables sont eux aussi petits. Sur ceux de grande taille, la probabilité d'avoir des mots plutôt similaires est beaucoup plus élevée. Cette représentation accélèrera donc grandement l'exécution des algorithmes, qui lorsqu'il s'agira de ne garder que les mots ayant une lettre précise à une position précise, pourront ne garder qu'une branche à tous les niveaux concernés.
+
+Pour chaque variable, on donnera alors comme domaine l'arbre du dictionnaire récupéré correspondant à sa taille. En lui donnant un arbre contenant uniquement les mots de sa taille, on effectue déjà la satisfaction de la contrainte (\ref{contrainte1}) est déjà vérifiée. Il n'y aura plus que les deux autres contraintes à satisfaire.
+
+\subsubsection{Algorithme d'arc consistance $AC3$ }
+Grâce à la représentation des domaines explicitée dans la sous-section précédente (\ref{domaines}), cet algorithme est réellement simple à appliquer. L'algorithme du cours a été appliqué, avec une légère modification : lorsqu'on regarde un couple de variables liées par une contrainte binaire, les deux domaines sont modifiés à la même itération. Voici l'algorithme appliqué
+
+\begin{algorithm}[H]
+	\caption{Procédure $AC3$}
+	\Entree{
+		\par\leftskip=1.5em Variables $x_i, \forall i \in {1, \dots, m}$
+	}
+	
+	\bigskip
+	\Deb{
+		$file$ := creerFile()
+		
+		\Pour{$(x_i, x_j), i < j$ liées par une contrainte}
+		{
+			enfiler($(x_i, x_j)$)
+		}
+		
+		\medskip
+		\Tq{estNonVide(file)}
+		{
+			$(x_i, x_j)$ := defiler($file$)
+			
+			change1, change2 = REVISE($x_i$, $x_j$)
+			
+			\Si{change1}
+			{
+				\Pour{$(x_k, x_i), k < i$ liées par une contrainte}
+				{
+					enfiler($(x_k, x_i)$)
+				}
+				
+				\Pour{$(x_i, x_k), i < k$ liées par une contrainte}
+				{
+					enfiler($(x_i, x_k)$)
+				}
+			}
+			
+			\Si{change2}
+			{
+				\Pour{$(x_k, x_j), k < j$ liées par une contrainte}
+				{
+					enfiler($(x_k, x_j)$)
+				}
+				
+				\Pour{$(x_j, x_k), j < k$ liées par une contrainte}
+				{
+					enfiler($(x_j, x_k)$)
+				}
+			}
+		}
+	}
+	
+\end{algorithm}
+
+Avec la procédure REVISE suivante :
+
+\begin{algorithm}[H]
+	\caption{Procédure REVISE}
+	\Entree{
+		\par\leftskip=1.5em Variables $x_i$ et $x_j$ liées par une contrainte
+	}
+	
+	\bigskip
+	\Deb{
+		$i$ := indice de la lettre soumise à la contrainte de la variable $x_i$
+		
+		$j$ := indice de la lettre soumise à la contrainte de la variable $x_j$
+		
+		$lettres_i$ := ensemble de lettres en position $i$ de $x_i$
+		
+		$lettres_j$ := ensemble de lettres en position $j$ de $x_j$
+		
+		$intersection$ := intersection des ensembles $lettres_i$ et $lettres_j$
+		
+		mofications := [False, False]
+		
+		\Si{$lettre_i \neq intersection$}
+		{
+			Retirer de l'arbre domaine de $x_i$ toutes les lettres au niveau $i$ qui ne sont pas dans $intersection$
+			modifications[0] := True
+		} 
+		
+		\Si{$lettre_j \neq intersection$}
+		{
+			Retirer de l'arbre domaine de $x_j$ toutes les lettres au niveau $j$ qui ne sont pas dans $intersection$
+			modifications[1] := True
+		}
+		
+		\Retour{modifications} 
+		
+	}
+\end{algorithm}
+
+En procédant comme cela, on ne calcule pour chaque couple de variable qu'une seule fois les lettres communes et leur intersection, en modifiant les domaines des deux variables. En suivant à la lettre l'algorithme du cours, on aurait été obligé de calculer ces données une fois pour $(x_i, x_j)$ et une fois pour $(x_j, x_i)$. On améliore ainsi de beaucoup la vitesse de calcul.
+
+\subsubsection{Heuristiques}
+Plusieurs heuristiques permettant de choisir le prochain mot à instancier ont été testées :
+\begin{description}
+	\item[heuristic\_next :] Cette heuristique renvoie simplement la prochaine parmi celles qui ne sont pas encore instanciées.
+	\item[heuristic\_max\_constraints :] Cette heuristique renvoie le mot qui possède le plus de contraintes binaires.
+	\item[heuristic\_min\_domain :] Cette heuristique renvoie le mot qui possède le plus petit domaine.
+	\item[heuristic\_constraints\_and\_size :] Cette heuristique renvoie le mot qui possède le plus de contraintes binaires, et en cas d'égalité celui d'entre eux qui a le plus petit domaine.
+	\item[heuristic\_size\_and\_constraints :] Cette heuristique renvoie le mot qui possède le plus petit domaine, et en cas d'égalité celui d'entre eux qui a le plus de contraintes binaires.
+	\item[heuristic\_max\_constraints\_with\_instanciated :] Cette heuristique renvoie le mot qui possède le plus de contraintes binaires avec les mots déjà instanciés, et en cas d'égalité celui d'entre eux qui a le plus petit domaine.
+\end{description}
+
+Dans tous les cas (hormis heuristic\_next qui n'en a pas besoin), en cas d'égalité à la fin des calculs, une variable correspondant au critère est choisie au hasard. De cette manière, deux lancements sur la même grille avec le même dictionnaire pourront donner des résultats différents.
+
+\subsubsection{Algorithme du Retour Arrière Chronologique avec Forward Checking}
+\label{RAC}
+Pour cet algorithme, le modèle du cours a été encore une fois appliqué avec une légère variation. Après avoir instancié un mot et lancé l'algorithme de Forward Checking, et avant de lancer l'appel récursivement avec les variables qui restent à instancier, on vérifie que lors du Forward Checking on n'a pas vidé complètement le domaine d'une variable qui était liée par une contrainte binaire. Dans ce cas, l'instanciation courante ne pourra pas donner de résultat satisfaisant, et il est inutile de faire l'appel récursif. Il faut alors rétablir les domaines qui ont été modifiés, comme si l'appel récursif avait échoué.
+
+De plus, l'avantage de cette méthode, mise à part l'accélération évidente de la vitesse de calcul d'une solution, est qu'elle permet de diminuer l'avantage que comporte le fait d'utiliser l'heuristique renvoyant la variable avec le plus petit domaine. En effet, sans ce changement, lors d'un Forward Checking vidant complètement le domaine d'une variable liée, l'heuristique des plus petits domaines renverra systématiquement la variable dont le domaine a été vidé, et cet appel récursif échouera, et le retour arrière sera immédiat. Avec une autre heuristique, il est possible qu'un autre mot, au pire avec un domaine immense, soit choisi. On ne saura alors que bien plus tard que c'est à ce niveau là qu'il fallait revenir.
+
+Nous sommes conscient que cet ajout rend moins avantageux l'algorithme de Conflict BackJumping qui ne remarquera ce le conflit qu'une fois arrivé à la variable. Certes, $CBJ$ retournerait plus vite à l'itération conflictuelle que le $RAC$ sans cet ajout, mais il peut quand même perdre du temps à aller vérifier des variables avec un domaine potentiellement grand, avant d'arriver à celle qui comportait un conflit.
+
+\subsubsection{Conflict BackJumping}
+Cette fois, l'algorithme du cours a été appliqué à la lettre. Notons toutefois que le Forward Checking a lui aussi été appliqué à chaque instanciation de variable. Ceci a rendu la recherche d'un conflit local inutile. En effet, il y a conflit local seulement si une instanciation de cette variable est incompatible avec l'instanciation d'une variable précédente. Cela ne peut arriver, puisqu'on a préalablement vidé le domaine de la variable courante des potentiels conflits par Forward Checking.
+
+Il est d'ailleurs intéressant de noter, comme le montrent les résultats de la section suivante, que le $CBJ$ donne une solution moins rapidement que $RAC$. La raison pour cela a été donnée dans le dernier paragraphe de la section précédente (\ref{RAC}).
 
 \subsection{Exp\'{e}rimentation}
 
@@ -156,11 +304,11 @@ Taille = 100 & t2 & \%  \\
 
 \subsection{Mod\'{e}lisation}
 
-Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids positif ou nul $\in \left[0,1\right]$ repr\'{e}sentant l'importance qu'un utilisateur attache \`{a} ce mot. Pour trouver la solution optimale du probl\`{e}me, c-\`{a}-d la solution de poids maximum dans la grille, il faut utiliser une m\'{e}thode exacte, comme le \og Branch \& Bound \fg{} qui sera repr\'{e}sent\'{e} par un arbre de recherche binaire.
+Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids réel positif ou nul appartenant à $\left[0,1\right]$ repr\'{e}sentant l'importance qu'un utilisateur attache \`{a} ce mot. Pour trouver la solution optimale du probl\`{e}me, c-\`{a}-d la solution de poids maximum dans la grille, il faut utiliser une m\'{e}thode exacte, comme le \og Branch \& Bound \fg{} qui sera repr\'{e}sent\'{e} par un arbre de recherche binaire.
 
 Chaque sous-probl\`{e}me cr\'{e}\'{e} au cours de l'exploration est d\'{e}sign\'{e} par un n\oe{}ud qui repr\'{e}sente les mots choisis pour chaque variable $x_{i}$ de la grille. Les branches de l'arbre symbolisent le processus de s\'{e}paration, elles repr\'{e}sentent la relation entre les n\oe{}uds (ajout du mot $m_{i} \in D(x_{i}$). Cette m\'{e}thode arborescente nous permettra donc d'\'{e}num\'{e}rer toutes les solutions possibles.
 
-En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou non \`{a} une solution admissible et on retient la meilleure solution obtenue, qui dans ce cas, sera la solution v\'{e}rifiant toutes de poids maximum.\\
+En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou non \`{a} une solution admissible et on retient la meilleure solution obtenue, qui dans ce cas, sera la solution étant poids maximum.\\
 
 Pour am\'{e}liorer la complexit\'{e} du \og Branch \& Bound \fg, seules les solutions qui v\'{e}rifient les contraintes de consistances potentiellement de bonne qualit\'{e} seront \'{e}num\'{e}r\'{e}es, les solutions ne pouvant pas conduire \`{a} am\'{e}liorer la solution courante ne sont pas explor\'{e}es. \\
 
@@ -189,41 +337,15 @@ Le type de parcours de l'arbre permet de choisir le prochain n\oe{}ud \`{a} s\'{
 
 \newpage
 
-\textbf{Variables :} ~ $x_{i}~,~\forall i \in \{1,...,m\}$
-
-\bigskip
-
-\textbf{Domaines :} Soit $dict$ un dictionnaire de mots admissibles:
-
-\begin{align*}
-D(x_{i}) = \{ X \in dict \}
-\end{align*}
-
-\bigskip
-
-\textbf{Contraintes :} Soit $l_{i}$ la taille du mot en $i$:
-
-\begin{equation} 
-len(x_{i}) = l_{i}
-\end{equation}
-\par
-Pour tous mots $x_{i}$ et $x_{j}$ qui se croisent \`{a} la \textit{q}-i\`{e}me lettre de $x_{i}$ et \`{a} la \textit{p}-i\`{e}me lettre de $x_{j}$, on a:
-\begin{equation} 
-x_{i}[q] = x_{j}[p]
-\end{equation}
-\par
-Si l'on ajoute la contrainte suppl\'{e}mentaire qu'un m\^{e}me mot ne peut appara\^{i}tre plus d'une fois dans la grille, il suffit d'ajouter la contrainte \textit{AllDiff}:
-\begin{equation} 
-\textit{AllDiff}~(x_{1},x_{2},...x_{m})
-\end{equation}
-
 \subsection{Exp\'{e}rimentation}
 
 \subsection{Bonus}
+La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Malheureusement, la taille de ce dictionnaire étant très grand, il est difficile de lancer l'algorithme de Branch And Bound qui prend beaucoup trop de temps.
 
 \newpage
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
+
 
 \end{document}

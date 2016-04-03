@@ -264,11 +264,11 @@ class Word:
         :param letter_index2: indice de la lettre commune dans le mot passé en paramètre
         :type word: Word
         :return: True si le domaine a été modifié, false sinon
-        :rtype: bool
+        :rtype: list[bool]
         """
         if not self.domain:
             return False
-        modif = False
+        modif = [False, False]
         this_letters = self.domain.letters_at_index(letter_index1)
         other_letters = word.domain.letters_at_index(letter_index2)
         union_letters = this_letters.intersection(other_letters)
@@ -277,10 +277,10 @@ class Word:
 
         if this_letters != union_letters:
             self.domain.respect_unary_constraints(letter_index1, union_letters)
-            modif = True
+            modif[0] = True
         if other_letters != union_letters:
             word.domain.respect_unary_constraints(letter_index2, union_letters)
-            modif = True
+            modif[1] = True
 
         return modif
 
@@ -294,7 +294,8 @@ class Word:
             return False
         modif = []
         for constraint in self.binary_constraints:
-            modif.append(self.respect_binary_constraint(constraint[0], constraint[1], constraint[2]))
+            temp = self.respect_binary_constraint(constraint[0], constraint[1], constraint[2])
+            modif.append(any(temp))
         return any(modif)
 
     def update_related_variables_domain(self):

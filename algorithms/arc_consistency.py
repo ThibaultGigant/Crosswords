@@ -12,7 +12,7 @@ def ac3(grid):
     Exécute l'algorithme AC3 sur la grille passée en paramètre
     :param grid: grille sur laquelle exécuter l'algorithme
     :type grid: Grid
-    :return: True si une solution unique est trouvée, False sinon
+    :return: False si la grille n'est pas arc consistante, True sinon
     """
     constraints = grid.constraints
     garbage_constraints = []
@@ -21,10 +21,12 @@ def ac3(grid):
         word1, word2, index1, index2 = constraints.pop(0)
         garbage_constraints.append((word1, word2, index1, index2))
         modif = word1.respect_binary_constraint(word2, index1, index2)
-        if modif:
-            constraints += [cons for cons in garbage_constraints if (cons[0] in [word1, word2] or cons[1] in [word1, word2])]
+        if modif[0]:
+            constraints += [cons for cons in garbage_constraints if (cons[0] == word1 or cons[1] == word1)]
+        if modif[1]:
+            constraints += [cons for cons in garbage_constraints if (cons[0] == word2 or cons[1] == word2)]
 
-    return any([word.domain.cardinality() > 1 for word in grid.words])
+    return all([word.domain.cardinality() > 0 for word in grid.words])
 
 
 if __name__ == '__main__':
