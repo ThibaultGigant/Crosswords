@@ -4,7 +4,6 @@ import sys
 from os import getcwd, listdir
 from os.path import basename, dirname, join
 from time import time
-from copy import deepcopy
 from pickle import dump, load
 
 sys.path.append(getcwd())
@@ -15,30 +14,17 @@ from algorithms.cbj import CBJ
 from algorithms.heuristics import *
 
 algorithms = [backtrack, CBJ]
-heuristics = [heuristic_next, heuristic_min_domain, heuristic_max_constraints,
-              heuristic_constraints_and_size, heuristic_size_and_constraints,
-              heuristics_max_constraints_with_instanciated
+heuristics = [heuristic_constraints_and_size,
+              heuristic_size_and_constraints, heuristics_max_constraints_with_instanciated
               ]
 
 ordre_temps = """Ordre d'affichage des temps :
-- backtrack avec heuristic_next sans obligation que chaque mot soit unique dans la grille
-- backtrack avec heuristic_next avec obligation que chaque mot soit unique dans la grille
-- backtrack avec heuristic_min_domain sans obligation que chaque mot soit unique dans la grille
-- backtrack avec heuristic_min_domain avec obligation que chaque mot soit unique dans la grille
-- backtrack avec heuristic_max_constraints sans obligation que chaque mot soit unique dans la grille
-- backtrack avec heuristic_max_constraints avec obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristic_constraints_and_size sans obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristic_constraints_and_size avec obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristic_size_and_constraints sans obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristic_size_and_constraints avec obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristics_max_constraints_with_instanciated sans obligation que chaque mot soit unique dans la grille
 - backtrack avec heuristics_max_constraints_with_instanciated avec obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_next sans obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_next avec obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_min_domain sans obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_min_domain avec obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_max_constraints sans obligation que chaque mot soit unique dans la grille
-- CBJ avec heuristic_max_constraints avec obligation que chaque mot soit unique dans la grille
 - CBJ avec heuristic_constraints_and_size sans obligation que chaque mot soit unique dans la grille
 - CBJ avec heuristic_constraints_and_size avec obligation que chaque mot soit unique dans la grille
 - CBJ avec heuristic_size_and_constraints sans obligation que chaque mot soit unique dans la grille
@@ -49,10 +35,11 @@ ordre_temps = """Ordre d'affichage des temps :
 """
 
 
-def calcul_temps_algos(grid):
+def calcul_temps_algos(grid_file, dico_file):
     """
     Applique tous les algorithmes (et toutes les heuristiques) à la grille et renvoie le temps d'exécution de chacun
-    :param grid: grille chargée et comportant déjà un dictionnaire
+    :param grid_file: chemin relatif ou absolu de la grille à tester
+    :param dico_file: chemin relatif ou absolu du dictionnaire associé
     :return: liste des temps d'exécution
     :rtype: list[list[int]]
     """
@@ -62,14 +49,13 @@ def calcul_temps_algos(grid):
         for algo in algorithms:
             for heuristic in heuristics:
                 for uniq in [False, True]:
-                    temp_grid = deepcopy(grid)
-                    nb_iterations = 1 if heuristic == heuristic_next else 10
+                    dico = read_dictionary(dico_file)
+                    grid = read_grid(grid_file, dico)
                     t = time()
-                    for _ in range(nb_iterations):
-                        if launch_ac3:
-                            ac3(temp_grid)
-                        algo(temp_grid, heuristic, uniq=uniq)
-                    temps_ac3.append((time()-t)/nb_iterations)
+                    if launch_ac3:
+                        ac3(grid)
+                    algo(grid, heuristic, uniq=uniq)
+                    temps_ac3.append((time()-t))
         temps.append(temps_ac3)
     return temps
 
@@ -92,10 +78,7 @@ def benchmark_algos(dossier_grilles, dossier_dicos):
         # Et chaque dico
         for dico_file in [f for f in listdir(dossier_dicos) if f[-4:] == ".txt"]:
             print(dico_file)
-            dico = read_dictionary(join(dossier_dicos, dico_file))
-            temp_grid = deepcopy(grid)
-            temp_grid.set_dictionary(dico)
-            dico_grille[dico_file] = calcul_temps_algos(temp_grid)
+            dico_grille[dico_file] = calcul_temps_algos(join(dossier_grilles, grid_file), join(dossier_dicos, dico_file))
 
         res_dico[grid_file] = dico_grille
 
@@ -117,7 +100,7 @@ def benchmark_to_file(dossier_grilles, dossier_dicos, output_file):
     print("Les benchmarks ont pris : " + str(time()-t) + " secondes")
 
     # Ecriture en binaire dans le fichier grâce à pickle
-    fp = open(dirname(output_file) + "pickle_" + basename(output_file), "wb")
+    fp = open(join(dirname(output_file), "pickle_" + basename(output_file)), "wb")
     dump(dico, fp)
     fp.close()
 

@@ -229,20 +229,10 @@ if __name__ == '__main__':
     t = time()
     grid1 = read_grid(sys.argv[2], dico)
     print("Temps de création de la grille: " + str(time() - t))
-    grid2 = deep(grid1)
-    t = time()
-    ac3(grid2)
-    res = CBJ_without_FC(grid2, heuristic_size_and_constraints, True)
-    print("Temps de calcul de l'algo : " + str(time() - t))
-    print([w.id for w in res])
-    if not res:
-        instanciation = [(w.id, w.domain.list_words()) for w in grid2.instanciated_words]
-        instanciation.sort(key=lambda x: x[0])
-        print(instanciation)
 
     t = time()
     ac3(grid1)
-    res = CBJ(grid1, heuristic_size_and_constraints, True)
+    res = CBJ(grid1, heuristic_constraints_and_size, True)
 
     print("Temps de calcul de l'algo : " + str(time() - t))
     print("Temps total : " + str(time() - t1))
