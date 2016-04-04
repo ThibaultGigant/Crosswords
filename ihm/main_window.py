@@ -67,6 +67,19 @@ class MainWindow(Frame):
             else:
                 self.left_frame.set_done_false()
 
+    def clean_left_result(self):
+        """
+        Efface le résultat précédent du panneau gauche
+        """
+        self.left_frame.clean_lower_panel()
+
+    def clean_left_frame(self):
+        """
+        Efface le panneau gauche
+        """
+        self.grid = None
+        self.set_left_frame(None)
+
 
 def launch():
     root = Tk()

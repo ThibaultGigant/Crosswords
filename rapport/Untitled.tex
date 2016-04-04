@@ -72,7 +72,7 @@ Morgan \textsc{Chopin}
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), retour arrière chronologique ($RAC$) avec forward checking ($FC$), et conflict back-jumping ($CBJ$) avec $FC$ lui aussi aussi. La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
+Dans ce projet, on s'int\'{e}resse \`{a} compl\'{e}ter une grille de taille $M\times N$. Dans un premier temps, on mod\'{e}lisera ce probl\`{e}me comme un probl\`{e}me de satisfaction de contraintes et on d\'{e}veloppera plusieurs m\'{e}thodes diff\'{e}rentes de recherche d'une solution au probl\`{e}me CSP : arc consistance du graphes des contraintes ($AC3$), retour arrière chronologique ($RAC$) avec forward checking ($FC$), et conflict back-jumping ($CBJ$) avec $FC$ lui aussi. La grille peut \^{e}tre d\'{e}j\`{a} partiellement remplie par l'utilisateur.
 
 Dans un second temps, on mod\'{e}lisera ce probl\`{e}me comme un CSP valu\'{e}. Chaque mot du dictionnaire sera muni d'un poids positif ou nul appartenant à $\left[0,1\right]$ et on d\'{e}veloppera un algorithme de type Branch and Bound qui permette de rechercher la solution optimale qui serait la solution de poids maximal dans la grille.
 
@@ -116,7 +116,7 @@ Pour r\'{e}soudre ce probl\`{e}me, on peut le mod\'{e}liser comme un probl\`{e}m
 \end{description}
 
 \subsection{Implémentation}
-Tout cela doit être implémentée de la manière la plus simple possible en machine. Voici le détail de ce qui a été effectué pour ce projet.
+Tout cela doit être implémenté de la manière la plus simple possible en machine. Voici le détail de ce qui a été effectué pour ce projet.
 
 \subsubsection{Les domaines des variables}
 \label{domaines}
@@ -255,24 +255,24 @@ Pour cet algorithme, le modèle du cours a été encore une fois appliqué avec une 
 
 De plus, l'avantage de cette méthode, mise à part l'accélération évidente de la vitesse de calcul d'une solution, est qu'elle permet de diminuer l'avantage que comporte le fait d'utiliser l'heuristique renvoyant la variable avec le plus petit domaine. En effet, sans ce changement, lors d'un Forward Checking vidant complètement le domaine d'une variable liée, l'heuristique des plus petits domaines renverra systématiquement la variable dont le domaine a été vidé, et cet appel récursif échouera, et le retour arrière sera immédiat. Avec une autre heuristique, il est possible qu'un autre mot, au pire avec un domaine immense, soit choisi. On ne saura alors que bien plus tard que c'est à ce niveau là qu'il fallait revenir.
 
-Nous sommes conscient que cet ajout rend moins avantageux l'algorithme de Conflict BackJumping qui ne remarquera ce le conflit qu'une fois arrivé à la variable. Certes, $CBJ$ retournerait plus vite à l'itération conflictuelle que le $RAC$ sans cet ajout, mais il peut quand même perdre du temps à aller vérifier des variables avec un domaine potentiellement grand, avant d'arriver à celle qui comportait un conflit.
+Nous sommes conscient que cet ajout rend moins avantageux l'algorithme de Conflict BackJumping qui ne remarquera ce conflit qu'une fois arrivé à la variable. Certes, $CBJ$ retournerait plus vite à l'itération conflictuelle que le $RAC$ sans cet ajout, mais il peut quand même perdre du temps à aller vérifier des variables avec un domaine potentiellement grand, avant d'arriver à celle qui comportait un conflit.
 
 \subsubsection{Conflict BackJumping}
 Cette fois, l'algorithme du cours a été appliqué à la lettre. Notons toutefois que le Forward Checking a lui aussi été appliqué à chaque instanciation de variable. Ceci a rendu la recherche d'un conflit local inutile. En effet, il y a conflit local seulement si une instanciation de cette variable est incompatible avec l'instanciation d'une variable précédente. Cela ne peut arriver, puisqu'on a préalablement vidé le domaine de la variable courante des potentiels conflits par Forward Checking.
 
-Il est d'ailleurs intéressant de noter, comme le montrent les résultats de la section suivante, que le $CBJ$ donne une solution moins rapidement que $RAC$. La raison pour cela a été donnée dans le dernier paragraphe de la section précédente (\ref{RAC}).
+Il est d'ailleurs intéressant de noter, comme le montrent les résultats de la section suivante, que le $CBJ$ donne globalement une solution légèrement moins rapidement que $RAC$. La raison pour cela a été donnée dans le dernier paragraphe de la section précédente (\ref{RAC}).
 
-Pour ces deux derniers algorithmes, il a été implémentée une fonctionnalité permettant de choisir si l'on souhaite que les mots n'apparaissent qu'une seule fois dans la grille. Cette particularité est vérifiée au niveau du Forward Checking, qui supprime du domaine des variables de même taille le mot qui vient d'être instancié. Par la suite, cette fonctionnalité sera toujours appliquée. En effet, souvent une solution plus rapide sera donnée car les grilles sont assez symétriques et permettent de positionner les mots de telle sorte qu'ils forment des structures elles aussi symétriques, comme sur la figure suivante :
+Pour ces deux derniers algorithmes, une fonctionnalité permettant de choisir si l'on souhaite que les mots n'apparaissent qu'une seule fois dans la grille a été implémentée. Cette particularité est vérifiée au niveau du Forward Checking, qui supprime du domaine des variables de même taille le mot qui vient d'être instancié. Par la suite, cette fonctionnalité sera toujours appliquée. En effet, souvent une solution plus rapide sera donnée car les grilles sont assez symétriques, et un même mot, au début d'un domaine, peut être placé à plusieurs endroits. Les mots se positionnent d'ailleurs de telle sorte qu'ils forment des structures elles aussi symétriques, comme sur la figure suivante :
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[scale=0.9]{Images/gridA_not_uniq.png}
+		\includegraphics{Images/gridA_not_uniq.png}
 		\caption{Grille A résolue sans la contrainte (3)}
 	\end{center}
 \end{figure}
 
 \subsection{Exp\'{e}rimentation}
-Les algorithmes ont été appliqués aux grilles données dans le sujet, ainsi qu'à quelques autres grilles récupérées du site \url{http://puzzles.about.com/od/howtostutorials/ig/CrosswordGrids/}, et à quelques instances générées aléatoirement. Les résultats sont stockés dans le dossier du projet :\\
+Les algorithmes ont été appliqués aux grilles données dans le sujet (notées A, B et C, de gauche à droite), ainsi qu'à quelques autres grilles récupérées du site :\\ \mbox{\url{http://puzzles.about.com/od/howtostutorials/ig/CrosswordGrids/}}, et à quelques instances générées aléatoirement. Les résultats sont stockés dans le dossier du projet :\\
 \texttt{Crosswords/Data/Results/Grilles\_Resolues/}\\
 et leurs images correspondantes en annexe de ce rapport.
 
@@ -350,7 +350,7 @@ Maintenant, si l'on s'intéresse à l'influence de la taille du dictionnaire sur l
 	\end{center}
 \end{figure}
 
-On peut noter que le temps d'exécution augmente au début avec la taille du dictionnaire. Mais les deux dernier dictionnaires, assez conséquents de taille approximative 133000 mots et 135000 mots nous donnent tort. Il est probable que ces dictionnaires s'arrangent bien avec la grille. Il faut donc comparer avec une autre grille, que nous donne des résultats plus ou moins similaires :
+On peut noter que le temps d'exécution augmente au début avec la taille du dictionnaire. Mais les deux dernier dictionnaires, assez conséquents de taille approximative 133000 mots et 135000 mots nous donnent tort. Il est probable que ces dictionnaires s'arrangent bien avec la grille. Il faut donc comparer avec une autre grille, qui nous donne des résultats plus ou moins similaires :
 
 \begin{figure}[H]
 	\begin{center}
@@ -392,7 +392,7 @@ Dans cette partie, on suppose que chaque mot du dictionnaire est muni d'un poids
 
 Chaque sous-probl\`{e}me cr\'{e}\'{e} au cours de l'exploration est d\'{e}sign\'{e} par un n\oe{}ud qui repr\'{e}sente les mots choisis pour chaque variable $x_{i}$ de la grille. Les branches de l'arbre symbolisent le processus de s\'{e}paration, elles repr\'{e}sentent la relation entre les n\oe{}uds (ajout du mot $m_{i} \in D(x_{i}$). Cette m\'{e}thode arborescente nous permettra donc d'\'{e}num\'{e}rer toutes les solutions possibles.
 
-En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou non \`{a} une solution admissible et on retient la meilleure solution obtenue, qui dans ce cas, sera la solution étant poids maximum.\\
+En chacune des feuilles de l'arbre, on a une solution possible qui correspond ou non \`{a} une solution admissible et on retient la meilleure solution obtenue, qui dans ce cas, sera la solution de poids maximum.\\
 
 Pour am\'{e}liorer la complexit\'{e} du \og Branch \& Bound \fg, seules les solutions qui v\'{e}rifient les contraintes de consistances potentiellement de bonne qualit\'{e} seront \'{e}num\'{e}r\'{e}es, les solutions ne pouvant pas conduire \`{a} am\'{e}liorer la solution courante ne sont pas explor\'{e}es. \\
 
@@ -421,7 +421,7 @@ Supposons qu'on est \`{a} un noeud de l'arbre et on a une solution partielle $s_
 b_{inf} = v(s_p)
 \end{align*}
 
-Si la borne inf\'{e}rieure \`{a} une feuille de l'arbre (c-\`{a}-d apr\`{e}s avoir instancier les n variables de la grille) est sup\'{e}rieure \`{a} la valeur de la solution courante, on a trouv\'{e} une meilleure solution.
+Si la borne inf\'{e}rieure \`{a} une feuille de l'arbre (c'est-à-dire apr\`{e}s avoir instancié les n variables de la grille) est sup\'{e}rieure \`{a} la valeur de la solution courante, on a trouv\'{e} une meilleure solution.
 
 \bigskip
 
@@ -431,7 +431,7 @@ Si la borne inf\'{e}rieure \`{a} une feuille de l'arbre (c-\`{a}-d apr\`{e}s avo
 b_{sup} = v(s_p) + \sum_{x_i } \max_{m_{j} \in D(x_{i})} p(m_{j})
 \end{align*}
 
-En effet, dans le meilleure des cas, la solution optimale est form\'{e}e de mots dont le poids est maximum dans le domaine de chaque variable de la grille, donc on obtient bien une borne sup\'{e}rieure \`{a} chaque sous-probl\`{e}me repr\'{e}sent\'{e} par les n\oe uds de l'arbre. Si cette borne sup\'{e}rieure est inf\'{e}rieure \`{a} la solution courante, il est inutile de continuer \`{a} explorer ce n\oe ud, puisque cette solution partielle ne pourrait pas conduire \`{a} am\'{e}liorer la solution courante.
+En effet, dans le meilleur des cas, la solution optimale est form\'{e}e de mots dont le poids est maximum dans le domaine de chaque variable de la grille, donc on obtient bien une borne sup\'{e}rieure \`{a} chaque sous-probl\`{e}me repr\'{e}sent\'{e} par les n\oe uds de l'arbre. Si cette borne sup\'{e}rieure est inf\'{e}rieure \`{a} la solution courante, il est inutile de continuer \`{a} explorer ce n\oe ud, puisque cette solution partielle ne pourrait pas conduire \`{a} am\'{e}liorer la solution courante.
 
 \subsubsection{Parcours de l'arbre}
 
@@ -445,7 +445,7 @@ Pour l'impl\'{e}mentation du \og Branch \& Bound \fg{}, nous avons d'abord tri\'
 
 \subsubsection*{En fonction de la taille du dictionnaire}
 
-Afin de construire un graphe montrant l'\'{e}volution du temps en fonction de la taille du dictionnaire, nous avons g\'{e}n\'{e}r\'{e} 10 instances de 6 dictionnaires contenant chacun 50, 300, 400, 500, 650 et 850 mots pour la grille A de taille $5 \times 5$. Nous avons aussi comparer les courbes lorsque les mots dans les grilles sont uniques ou pas.\\
+Afin de construire un graphe montrant l'\'{e}volution du temps en fonction de la taille du dictionnaire, nous avons g\'{e}n\'{e}r\'{e} 10 instances de dictionnaires contenant chacun 52, 300, 400, 500, 650 et 850 mots pour une grille de taille $5 \times 5$. Nous avons aussi comparé les courbes lorsque les mots dans les grilles doivent être uniques ou pas.\\
 
 \begin{figure}[H]
 \begin{center}
@@ -467,7 +467,7 @@ Pour \'{e}tudier l'\'{e}volution du temps en fonction de la taille de la grille,
 \end{center}
 \end{figure}
 
-Dans cette deuxi\`{e}me \'{e}tude, le temps d'ex\'{e}cution ne d\'{e}pend pas de la taille de la grille, mais du nombre de variables dans la grille. En effet, les grilles \`{a} 10 et 15 variables avait toutes les deux la m\^{e}me taille ($7 \times 7$) mais ont des temps d'\'{e}xecution assez diff\'{e}rents dans le cas o\`{u} les mots ne peuvent apparaitre qu'une seule fois dans la grille. Il d\'{e}pend \'{e}galement du dictionnaire utilis\'{e}. Dans cet exemple, le temps d'ex\'{e}cution sur des grilles \`{a} 12 variables est sup\'{e}rieure aux temps d'ex\'{e}cution sur des grilles \`{a} 15 et 18 variables.
+Dans cette deuxi\`{e}me \'{e}tude, le temps d'ex\'{e}cution ne d\'{e}pend pas de la taille de la grille, mais du nombre de variables dans la grille. En effet, les grilles \`{a} 10 et 15 variables avaient toutes les deux la m\^{e}me taille ($7 \times 7$) mais ont des temps d'\'{e}xecution assez diff\'{e}rents dans le cas o\`{u} les mots ne peuvent apparaitre qu'une seule fois dans la grille. Il d\'{e}pend \'{e}galement du dictionnaire utilis\'{e}. En effet, dans notre exemple, pour des grilles \`{a} 12 variables, le temps d'ex\'{e}cution est sup\'{e}rieur aux temps d'ex\'{e}cution des grilles \`{a} 18 et 15 variables.
 
 De plus, il est int\'{e}ressant de noter que le temps d'ex\'{e}cution augmente plus rapidement en fonction de la taille du dictionnaire que du nombre de variable dans la grille.
 
@@ -483,6 +483,8 @@ Le temps d'ex\'{e}cution \'{e}tant \'{e}gal \`{a} (temps).
 
 \subsection{Bonus}
 La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Malheureusement, la taille de ce dictionnaire étant très grand, il est difficile de lancer l'algorithme de Branch And Bound qui prend beaucoup trop de temps. Le dictionnaire a alors été modifié manuellement pour correspondre aux besoins. Vous avez pu voir le résultat sur la figure précédente.
+
+\newpage
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
@@ -532,6 +534,26 @@ La section bonus a été réalisée. Les pages relatives aux UE du site web \url{and
 		\caption{Grille grid13x13GridIndex}
 	\end{center}
 \end{figure}
+
+\subsection{Lancement du programme}
+Pour lancer le programme, depuis la racine du dossier, tapez :
+\begin{center}
+	\texttt{python3 run.py}
+\end{center}
+
+Le programme fonctionne uniquement en \emph{Python3}. Les bibliothèques nécessaires à certaines fonctionnalités n'étant pas disponible ou implémentée trop différemment en \emph{Python2}
+
+\subsubsection{Pré-requis}
+La bibliothèque emph{tkinter} est nécessaires à l'exécution du programme.
+Elle sert à l'affichage des fenêtres.
+
+Pour installer \emph{tkinter} sous \emph{Python3}, sur Linux/Debian tapez dans un terminal
+\begin{center}
+	\texttt{sudo apt-get install python-tk python-imaging-tk python3-tk tk8.6-dev}
+\end{center}
+
+Pour Windows et Mac, il est plus facile d'installer directement la dernière version de Python disponible à cette adresse : \url{https://www.python.org/downloads/}
+
 
 
 
