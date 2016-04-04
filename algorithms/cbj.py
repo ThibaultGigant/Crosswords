@@ -120,6 +120,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         grid.uninstanciated_words.insert(0, xk)
         if first_call and mainwindow:
             mainwindow.display_done(False)
+            mainwindow.display_grid()
     return conflit
 
 

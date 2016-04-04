@@ -101,6 +101,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
     grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
     if first_call and mainwindow:
+        mainwindow.display_grid()
         mainwindow.display_done(False)
     return False
 

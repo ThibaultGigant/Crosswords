@@ -52,6 +52,7 @@ class RightFrame(Frame):
         Change le panneau droit pour qu'il corresponde aux options pour une grille pré-chargée
         """
         self.clean_upper_panel()
+        self.parent.clean_left_frame()
         self.upper_panel = ChoixAlgo(self)
         self.pack_upper_panel()
 
@@ -60,6 +61,7 @@ class RightFrame(Frame):
         Affiche dans le panneau supérieur les options nécessaires à la génération d'une grille
         """
         self.clean_upper_panel()
+        self.parent.clean_left_frame()
         self.upper_panel = ChoixGeneration(self)
         self.pack_upper_panel()
 
@@ -68,6 +70,7 @@ class RightFrame(Frame):
         Affiche dans le panneau supérieur les options pour le Branch & Bound
         """
         self.clean_upper_panel()
+        self.parent.clean_left_frame()
         self.upper_panel = ChoixBnB(self)
         self.pack_upper_panel()
 
