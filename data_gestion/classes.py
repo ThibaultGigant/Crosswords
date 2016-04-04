@@ -149,10 +149,9 @@ class Grid:
         :param solution: Mots correspondant à une solution de la grille
         :type solution: list[str]
         """
-        i = 0
-        for w in self.words:
-            w.domain = Tree(solution[i])
-            i += 1
+        for ind, w in enumerate(self.words):
+            w.domain = Tree(solution[ind])
+            self.instanciated_words.append(w)
 
     def __str__(self):
         """

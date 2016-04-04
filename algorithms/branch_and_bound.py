@@ -86,13 +86,13 @@ def launch_bnb(grid, dico, uniq=True, mainwindow=None):
     :param mainwindow: widget de la fenêtre principale, sert principalement à l'affichage à la fin de la recherche
     """
     a, best = bnb(len(grid.words), grid.words, dico, uniq=uniq)
-    if best[0]:
-        grid.fill_grid(best[0])
-    mainwindow.display_grid()
-    if not best[0]:
-        mainwindow.right_frame.set_to_solved_bnb(False)
-    else:
-        mainwindow.right_frame.set_to_solved_bnb(True)
+    if mainwindow:
+        if best[0]:
+            mainwindow.grid.fill_grid(best[0])
+            mainwindow.right_frame.set_to_solved_bnb(True)
+        else:
+            mainwindow.right_frame.set_to_solved_bnb(False)
+        mainwindow.display_grid()
 
 
 def test_instance():

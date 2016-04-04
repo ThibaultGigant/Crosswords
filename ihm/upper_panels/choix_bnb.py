@@ -136,8 +136,8 @@ class ChoixBnB(Frame):
                         {"uniq": self.var_uniq.get(), "mainwindow": self.parent.parent})
         # Lancement du thread qui fera les calculs et l'affichage
         thread.daemon = True
-        thread.start()
         self.parent.set_to_solving_bnb()
+        thread.start()
 
     def affiche_wrong_dico(self, var_test, var_affichage):
         """

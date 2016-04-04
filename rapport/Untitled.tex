@@ -473,16 +473,29 @@ De plus, il est int\'{e}ressant de noter que le temps d'ex\'{e}cution augmente p
 
 \subsubsection*{Grille ANDROIDE}
 
-Dans cette partie, nous avons constitu\'{e} un dictionnaire avec des mots-cl\'{e}s utilis\'{e}s fr\'{e}quemment dans les cours du master ANDROIDE, tous de poids 1, et des mots suppl\'{e}mentaires de poids inf\'{e}rieur \`{a} 1. Avec la grille C, on obtient la solution suivante:\\
+Dans cette partie, nous avons constitu\'{e} un dictionnaire avec des mots-cl\'{e}s utilis\'{e}s fr\'{e}quemment dans les cours du master ANDROIDE, tous de poids 1, et des mots suppl\'{e}mentaires de poids inf\'{e}rieur \`{a} 1. Avec une grille crée pour cette tâche, on obtient la solution suivante:\\
 
-Image
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics{Images/gridANDROIDE_full_with_dicoANDROIDE.png}
+		\caption{Grille gridANDROIDE résolue par Branch \& Bound -- dictionnaire valué dicoANDROIDE}
+		\label{gridANDROIDE_dicoANDROIDE}
+	\end{center}
+\end{figure}
 
-\bigskip
-
-Le temps d'ex\'{e}cution \'{e}tant \'{e}gal \`{a} (temps).
+Le temps d'ex\'{e}cution \'{e}tant \'{e}gal \`{a} légèrement moins de 8 millisecondes.
 
 \subsection{Bonus}
-La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Malheureusement, la taille de ce dictionnaire étant très grand, il est difficile de lancer l'algorithme de Branch And Bound qui prend beaucoup trop de temps. Le dictionnaire a alors été modifié manuellement pour correspondre aux besoins. Vous avez pu voir le résultat sur la figure précédente.
+La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Ce dictionnaire a alors été modifié manuellement pour correspondre aux besoins. Vous avez pu voir le résultat sur la figure précédente (\ref{gridANDROIDE_dicoANDROIDE}). Cependant, si on l'applique au dictionnaire original et qu'on regarde la solution retournée par l'algorithme de Branch \& Bound, ce sont des mots très communs (et donc avec une fréquence plus élevée), qui est retournée :
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics{Images/gridANDROIDE_full_with_ANDROIDE.png}
+		\caption{Grille gridANDROIDE résolue par Branch \& Bound -- dictionnaire valué ANDROIDE}
+	\end{center}
+\end{figure}
+
+On peut remarquer la présence d'un mot qui a l'air de ne pas exister : \og UVRE \fg. Sa présence dans le dictionnaire est dû au fait que le mot \og \oe uvre \fg{}, lors de la création du dictionnaire, est transformé en \og uvre \fg{}. Cela est dû à la bibliothèque utilisée pour transformer les caractères accentués et spéciaux, qui ne sait pas par quoi remplacer le caractère \og \oe \fg{}.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
@@ -532,6 +545,16 @@ La section bonus a été réalisée. Les pages relatives aux UE du site web \url{and
 		\caption{Grille grid13x13GridIndex}
 	\end{center}
 \end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics{Images/gridANDROIDE_empty.png}
+		\includegraphics{Images/gridANDROIDE_full_with_ANDROIDE.png}
+		\includegraphics{Images/gridANDROIDE_full_with_dicoANDROIDE.png}
+		\caption{Grille gridANDROIDE résolue par Branch \& Bound}
+	\end{center}
+\end{figure}
+
 
 \subsection{Lancement du programme}
 Pour lancer le programme, depuis la racine du dossier, tapez :
