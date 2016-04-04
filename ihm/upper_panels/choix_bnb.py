@@ -95,6 +95,7 @@ class ChoixBnB(Frame):
         # Définition des boutons
         check_ac3 = Checkbutton(self, text="Lancer AC3 avant d'appliquer l'algorithme principal ?",
                                 variable=self.var_ac3, onvalue=True, offvalue=False)
+        check_ac3.select()
         check_uniq = Checkbutton(self, text="Apparition unique d'un mot ?",
                                  variable=self.var_uniq, onvalue=True, offvalue=False)
 
@@ -128,7 +129,7 @@ class ChoixBnB(Frame):
             return
 
         # Récupération des variables qui nous intéressent
-        if self.var_ac3:
+        if self.var_ac3.get():
             ac3(self.parent.parent.grid)
 
         # Création d'un thread pour les algorithmes à lancer

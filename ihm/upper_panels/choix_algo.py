@@ -116,7 +116,10 @@ class ChoixAlgo(Frame):
         label_algo = Label(self, text="Choisir l'algorithme à appliquer :", font=("", 16))
         radio_rac = Radiobutton(self, text="Retour Arrière Chronologique", variable=self.var_algo, value=0)
         radio_cbj = Radiobutton(self, text="Conflict Back Jumping", variable=self.var_algo, value=1)
+
         radio_rac.select()
+        check_ac3.select()
+        check_uniq.select()
 
         # Affichage des widgets
         label_algo.grid(pady=10, columnspan=4)
@@ -184,7 +187,7 @@ class ChoixAlgo(Frame):
             return
 
         # Récupération des variables qui nous intéressent
-        if self.var_ac3:
+        if self.var_ac3.get():
             ac3(self.parent.parent.grid)
 
         if self.var_step_by_step.get():
