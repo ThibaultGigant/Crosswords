@@ -146,7 +146,7 @@ def test_mots_androide():
     t = time()
     n = len(grid.grid_to_words())
     print(n, len(dico_values))
-    a, best = bnb(n, grid.grid_to_words(), dico_values, uniq=True)
+    a, best = bnb(n, grid.grid_to_words(), dico_values, uniq=False)
     print("Temps d'exploration de l'arbre: " + str(time() - t))
     print("Solution optimale " + str(best[0]) + " qui a une valeur égale à " + str(best[1]))
     print("On explore " + str(len(a)) + " noeuds.")

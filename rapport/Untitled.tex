@@ -445,7 +445,7 @@ Pour l'impl\'{e}mentation du \og Branch \& Bound \fg{}, nous avons d'abord tri\'
 
 \subsubsection*{En fonction de la taille du dictionnaire}
 
-Afin de construire un graphe montrant l'\'{e}volution du temps en fonction de la taille du dictionnaire, nous avons g\'{e}n\'{e}r\'{e} 10 instances de dictionnaires contenant chacun 52, 300, 400, 500, 650 et 850 mots pour une grille de taille $5 \times 5$. Nous avons aussi comparer les courbes lorsque les mots dans les grilles sont uniques ou pas.\\
+Afin de construire un graphe montrant l'\'{e}volution du temps en fonction de la taille du dictionnaire, nous avons g\'{e}n\'{e}r\'{e} 10 instances de 6 dictionnaires contenant chacun 50, 300, 400, 500, 650 et 850 mots pour la grille A de taille $5 \times 5$. Nous avons aussi comparer les courbes lorsque les mots dans les grilles sont uniques ou pas.\\
 
 \begin{figure}[H]
 \begin{center}
@@ -467,7 +467,7 @@ Pour \'{e}tudier l'\'{e}volution du temps en fonction de la taille de la grille,
 \end{center}
 \end{figure}
 
-Dans cette deuxi\`{e}me \'{e}tude, le temps d'ex\'{e}cution ne d\'{e}pend pas de la taille de la grille, mais du nombre de variables dans la grille. En effet, les grilles \`{a} 10 et 15 variables avait toutes les deux la m\^{e}me taille ($7 \times 7$) mais ont des temps d'\'{e}xecution assez diff\'{e}rents dans le cas o\`{u} les mots ne peuvent apparaitre qu'une seule fois dans la grille. Il d\'{e}pend \'{e}galement du dictionnaire utilis\'{e}. En effet, dans notre exemple, pour des grilles \`{a} 12 variables, le temps d'ex\'{e}cution est sup\'{e}rieure aux temps d'ex\'{e}cution des grilles \`{a} 18 et 15 variables.
+Dans cette deuxi\`{e}me \'{e}tude, le temps d'ex\'{e}cution ne d\'{e}pend pas de la taille de la grille, mais du nombre de variables dans la grille. En effet, les grilles \`{a} 10 et 15 variables avait toutes les deux la m\^{e}me taille ($7 \times 7$) mais ont des temps d'\'{e}xecution assez diff\'{e}rents dans le cas o\`{u} les mots ne peuvent apparaitre qu'une seule fois dans la grille. Il d\'{e}pend \'{e}galement du dictionnaire utilis\'{e}. Dans cet exemple, le temps d'ex\'{e}cution sur des grilles \`{a} 12 variables est sup\'{e}rieure aux temps d'ex\'{e}cution sur des grilles \`{a} 15 et 18 variables.
 
 De plus, il est int\'{e}ressant de noter que le temps d'ex\'{e}cution augmente plus rapidement en fonction de la taille du dictionnaire que du nombre de variable dans la grille.
 
@@ -483,8 +483,6 @@ Le temps d'ex\'{e}cution \'{e}tant \'{e}gal \`{a} (temps).
 
 \subsection{Bonus}
 La section bonus a été réalisée. Les pages relatives aux UE du site web \url{androide.lip6.fr} ont été copiées dans un fichier texte. C'est ce texte qui a servi de référence pour la création du dictionnaire. Il y a beaucoup de mots, les fréquences sont donc très petites. Malheureusement, la taille de ce dictionnaire étant très grand, il est difficile de lancer l'algorithme de Branch And Bound qui prend beaucoup trop de temps. Le dictionnaire a alors été modifié manuellement pour correspondre aux besoins. Vous avez pu voir le résultat sur la figure précédente.
-
-\newpage
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
