@@ -12,6 +12,9 @@ from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
 
 
+sleep_time = 0.1
+
+
 def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_call=True):
     """
     Backtracking avec forward checking
@@ -31,7 +34,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(sleep_time)
             mainwindow.display_done(True)
         return True
 
@@ -41,7 +44,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()
@@ -81,7 +84,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()

@@ -9,6 +9,8 @@ from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
 from algorithms.rac import backtrack
 from algorithms.cbj import CBJ
+import algorithms.rac
+import algorithms.cbj
 
 
 # Variables globales
@@ -42,6 +44,8 @@ class ChoixAlgo(Frame):
         self.var_step_by_step = BooleanVar()
         self.down_button = None
         self.dico = None
+        self.sleep_time = DoubleVar()
+        self.sleep_time.set(0.1)
 
         self.choice_buttons()
 
@@ -164,8 +168,16 @@ class ChoixAlgo(Frame):
         """
         check_step_by_step = Checkbutton(self, text="Affichage étape par étape avec attente de clic ?",
                                          variable=self.var_step_by_step, onvalue=True, offvalue=False)
+        label = Label(self, text="Sans step by step, quel temps d'attente entre deux raffraichissement ?")
+        scale = Scale(self, from_=0.05, to=1, resolution=0.01, orient=HORIZONTAL, length=350, showvalue=0,
+                      variable=self.sleep_time)
+        spin = Spinbox(self, from_=0.05, to=1, increment=0.01, state="readonly", width=4, textvariable=self.sleep_time)
         self.down_button = Button(self, text="Lancer l'algorithme !", command=self.launch_algo)
+
         check_step_by_step.grid(columnspan=4, sticky=W)
+        label.grid(columnspan=4)
+        scale.grid(row=17, column=0, columnspan=3)
+        spin.grid(row=17, column=3)
         self.down_button.grid(columnspan=4)
 
     def launch_algo(self):
@@ -196,6 +208,10 @@ class ChoixAlgo(Frame):
             self.parent.parent.left_frame.set_button_next(event)
         else:
             event = None
+
+        # Changement du temps de rafraichissement, au cas où ce serait nécessaire
+        algorithms.rac.sleep_time = self.sleep_time.get()
+        algorithms.cbj.sleep_time = self.sleep_time.get()
 
         # Création d'un thread pour les algorithmes à lancer
         if self.var_algo.get() == 0:

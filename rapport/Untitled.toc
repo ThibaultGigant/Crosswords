@@ -18,7 +18,7 @@
 \contentsline {subsection}{\numberline {2.3}Exp\'{e}rimentation}{15}
 \contentsline {subsection}{\numberline {2.4}Bonus}{18}
 \contentsline {section}{Conclusion}{19}
-\contentsline {section}{\numberline {A}Annexes}{20}
-\contentsline {subsection}{\numberline {A.1}Exemples de Grilles vides et leur r\'esolution}{20}
-\contentsline {subsection}{\numberline {A.2}Lancement du programme}{22}
-\contentsline {subsubsection}{\numberline {A.2.1}Pr\'e-requis}{22}
+\contentsline {section}{\numberline {A}Annexes}{21}
+\contentsline {subsection}{\numberline {A.1}Exemples de Grilles vides et leur r\'esolution}{21}
+\contentsline {subsection}{\numberline {A.2}Lancement du programme}{23}
+\contentsline {subsubsection}{\numberline {A.2.1}Pr\'e-requis}{23}

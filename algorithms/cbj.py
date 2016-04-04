@@ -10,6 +10,9 @@ from algorithms.heuristics import *
 from copy import deepcopy as deep
 
 
+sleep_time = 0.1
+
+
 def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_call=True):
     """
     Conflict BackJumping
@@ -28,7 +31,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(sleep_time)
             mainwindow.display_done(True)
         return set([])
 
@@ -38,7 +41,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()
@@ -69,7 +72,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()
@@ -143,7 +146,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(sleep_time)
             mainwindow.display_done(True)
         return set([])
 
@@ -153,7 +156,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
         if mainwindow:
             # mainwindow.grid = grid
             mainwindow.display_grid()
-            sleep(0.1)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()
@@ -184,7 +187,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
         # Affichage graphique
         if mainwindow:
             mainwindow.display_grid()
-            sleep(0.05)
+            sleep(sleep_time)
         if stop:
             stop.wait()
             stop.clear()
