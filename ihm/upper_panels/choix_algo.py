@@ -252,6 +252,7 @@ class ChoixAlgo(Frame):
             return
         if self.parent.parent.grid:
             self.parent.parent.grid.set_dictionary(self.dico)
+            self.parent.parent.display_grid()
 
     def affiche_wrong_grid(self, var_test, var_affichage):
         """

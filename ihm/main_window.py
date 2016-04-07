@@ -57,6 +57,12 @@ class MainWindow(Frame):
         elif self.grid and self.left_frame:
             self.left_frame.change_grid(self.grid)
 
+    def update_grid(self):
+        """
+        Met à jour la grille en fonction des modifications
+        """
+        self.left_frame.upper_panel.update_words()
+
     def display_done(self, done):
         """
         Affiche dans le panneau gauche le résultat de l'algorithme : solution trouvée ou pas

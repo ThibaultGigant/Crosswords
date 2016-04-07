@@ -53,6 +53,8 @@ class RightFrame(Frame):
         """
         self.clean_upper_panel()
         self.upper_panel = ChoixAlgo(self)
+        if self.parent.left_frame:
+            self.parent.left_frame.clean_lower_panel()
         self.pack_upper_panel()
 
     def choix_generer(self):
@@ -70,6 +72,8 @@ class RightFrame(Frame):
         """
         self.clean_upper_panel()
         self.upper_panel = ChoixBnB(self)
+        if self.parent.left_frame:
+            self.parent.left_frame.clean_lower_panel()
         self.pack_upper_panel()
 
     def set_to_solving(self, event):

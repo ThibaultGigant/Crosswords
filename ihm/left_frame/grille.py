@@ -30,9 +30,8 @@ class CellGrid(Canvas):
         self.written = []
         self.creation_cellules(grid.get_height(), grid.get_width(), grid.grid)
         self.draw()
-        self.update_words()
         self.scale(ALL, -1, -1, self.taille, self.taille)
-        self.config(scrollregion=[0, 0, taille * (grid.get_width() + 2), taille * (grid.get_width() + 2)])
+        self.config(scrollregion=[0, 0, 200, 200])
 
     def creation_cellules(self, nb_lignes, nb_colonnes, grid):
         """
@@ -52,16 +51,23 @@ class CellGrid(Canvas):
             for cell in l:
                 cell.draw()
 
+    def clear_cells(self):
+        """
+        Efface le texte des cellules qui ne sont pas fixées
+        """
+        for line in self.cells:
+            for cell in line:
+                cell.erase_text()
+
     def update_words(self):
         """
         Affiche les mots déjà instanciés par l'algorithme
         """
+        self.clear_cells()
         for word in self.grid.instanciated_words:
             mot = word.domain.list_words()[0]
             for (ind, (y, x)) in enumerate(word.list_coordinates):
-                if (x, y) not in self.written:
-                    self.written.append((x, y))
-                    self.create_text(x+1/2, y+1/2, text=mot[ind], fill="#777777")
+                self.cells[y][x].set_value(mot[ind])
 
 
 class Cell:
@@ -74,10 +80,18 @@ class Cell:
         self.ord = y
         self.fill = "black" if value == "1" else "white"
         self.value = value
+        self.fixed = False if value in ["0", "1"] else True
 
     def set_value(self, value):
-        self.value = value
-        self.draw()
+        if value not in ["0", "1"] and not self.fixed:
+            self.master.itemconfig(self.text, text=value)
+
+    def erase_text(self):
+        """
+        Efface la valeur si non-fixée
+        """
+        if not self.fixed:
+            self.master.itemconfig(self.text, text="")
 
     def draw(self):
         if self.master is not None:
@@ -86,10 +100,11 @@ class Cell:
             ymin = self.ord
             ymax = ymin + 1
             self.master.create_rectangle(xmin, ymin, xmax, ymax, fill=self.fill, outline="gray")
-            if self.value not in ["0", "1"]:
-                self.master.written.append((self.abs, self.ord))
-                self.master.create_text(self.abs + 1/2, self.ord + 1/2, text=self.value,
-                                        font=tkinter.font.Font(weight='bold'))
+            if self.fixed:
+                self.text = self.master.create_text(self.abs + 1/2, self.ord + 1/2, text=self.value,
+                                                    font=tkinter.font.Font(weight='bold'))
+            else:
+                self.text = self.master.create_text(self.abs + 1/2, self.ord + 1/2, text="", fill="#777777")
 
 
 def grille(root, G):

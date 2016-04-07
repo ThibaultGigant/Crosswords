@@ -7,7 +7,6 @@ from data_gestion.classes import deepcopy
 from data_gestion.file_gestion import *
 from algorithms.arc_consistency import ac3
 from algorithms.heuristics import *
-from copy import deepcopy as deep
 
 
 sleep_time = 0.1
@@ -30,7 +29,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
     if not grid.uninstanciated_words:
         # Affichage graphique
         if mainwindow:
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
             mainwindow.display_done(True)
         return set([])
@@ -40,7 +39,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         # Affichage si demandé
         if mainwindow:
             # mainwindow.grid = grid
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()
@@ -71,7 +70,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
 
         # Affichage graphique
         if mainwindow:
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()
@@ -123,7 +122,7 @@ def CBJ(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, first_c
         grid.uninstanciated_words.insert(0, xk)
         if first_call and mainwindow:
             mainwindow.display_done(False)
-            mainwindow.display_grid()
+            mainwindow.update_grid()
     return conflit
 
 
@@ -145,7 +144,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
         # print("HIT!!!!!!!!!!!!!")
         # Affichage graphique
         if mainwindow:
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
             mainwindow.display_done(True)
         return set([])
@@ -155,7 +154,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
         # Affichage si demandé
         if mainwindow:
             # mainwindow.grid = grid
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()
@@ -186,7 +185,7 @@ def CBJ_without_FC(grid, heuristic_function, uniq=True, stop=None, mainwindow=No
 
         # Affichage graphique
         if mainwindow:
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()

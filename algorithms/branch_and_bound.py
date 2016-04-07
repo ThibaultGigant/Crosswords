@@ -92,7 +92,7 @@ def launch_bnb(grid, dico, uniq=True, mainwindow=None):
             mainwindow.right_frame.set_to_solved_bnb(True)
         else:
             mainwindow.right_frame.set_to_solved_bnb(False)
-        mainwindow.display_grid()
+        mainwindow.update_grid()
 
 
 def test_instance():

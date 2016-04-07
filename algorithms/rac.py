@@ -33,7 +33,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
     if not grid.uninstanciated_words:
         # Affichage graphique
         if mainwindow:
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
             mainwindow.display_done(True)
         return True
@@ -43,7 +43,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         # Affichage si demandé
         if mainwindow:
             # mainwindow.grid = grid
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()
@@ -83,7 +83,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
         # Affichage si demandé
         if mainwindow:
             # mainwindow.grid = grid
-            mainwindow.display_grid()
+            mainwindow.update_grid()
             sleep(sleep_time)
         if stop:
             stop.wait()
@@ -104,7 +104,7 @@ def backtrack(grid, heuristic_function, uniq=True, stop=None, mainwindow=None, f
     grid.instanciated_words.remove(xk)
     xk.domain = deepcopy(domains[xk])
     if first_call and mainwindow:
-        mainwindow.display_grid()
+        mainwindow.update_grid()
         mainwindow.display_done(False)
     return False
 
