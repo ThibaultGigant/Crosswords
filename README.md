@@ -1,5 +1,12 @@
 # Crosswords
 Projet de "Résolution de Problèmes" en Master 1 à l'Université Pierre et Marie Curie
+Le but de ce projet est de permettre la création de grilles de mots croisés valides à partir d'un dictionnaire donné.
+Les algorithmes utilisés sont les suivants :
+* AC3 (arc consistance)
+* Backtracking
+* Forward Checking
+* Conflict Back Jumping
+* Branch & Bound
 
 ## Lancement
 Pour lancer le programme, depuis la racine du dossier, tapez :
